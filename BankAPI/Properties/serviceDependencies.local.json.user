@@ -1,0 +1,38 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "restored": true,
+      "restoreTime": "2022-09-19T12:23:36.7331351Z"
+    },
+    "secrets1": {
+      "restored": true,
+      "restoreTime": "2022-09-19T12:20:52.3397989Z"
+    },
+    "appInsights1": {
+      "restored": true,
+      "restoreTime": "2022-09-19T12:21:15.1621448Z"
+    }
+  },
+  "parameters": {
+    "mssql1.subscriptionId": {
+      "Name": "mssql1.subscriptionId",
+      "Type": "subscription",
+      "Value": "314ab187-60f4-49e9-821f-2df2b9d9d4dc"
+    },
+    "appInsights1.resourceGroupName": {
+      "Name": "appInsights1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "TinhAzureWebApi_group"
+    },
+    "mssql1.resourceGroupName": {
+      "Name": "mssql1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "FptLearning"
+    },
+    "appInsights1.subscriptionId": {
+      "Name": "appInsights1.subscriptionId",
+      "Type": "subscription",
+      "Value": "314ab187-60f4-49e9-821f-2df2b9d9d4dc"
+    }
+  }
+}
