@@ -1,0 +1,182 @@
+﻿@model BankModel.Customer
+@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Start Contact Area -->
+<section class="contact-area ptb-100">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="contacts-info">
+                    <h2>Get In Touch</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt in fel, malesuada mollis purus id sit in aliquet. Lectus eget morbi dui felis deman malesuada mollis purus.</p>
+
+                    <ul class="address">
+                        <li>
+                            <span>Email</span>
+                            <a href="https://templates.envytheme.com/cdn-cgi/l/email-protection#8de5e8e1e1e2cdefe4f9ffa3eee2e0"><span class="__cf_email__" data-cfemail="d0b8b5bcbcbf90b2b9a4a2feb3bfbd">[email&#160;protected]</span></a>
+                            <a href="https://templates.envytheme.com/cdn-cgi/l/email-protection#0c65626a634c6e65787e226f6361"><span class="__cf_email__" data-cfemail="fe97909891be9c978a8cd09d9193">[email&#160;protected]</span></a>
+                        </li>
+                        <li>
+                            <span>Call Us</span>
+                            <a href="tel:+02-345-67890">+02 345 67890</a>
+                            <a href="tel:+02-345-67810">+02 345 67810</a>
+                        </li>
+                        <li class="location">
+                            <span>Our Location</span>
+                            +7011 Vermont Ave, Los Angeles, CA 90044
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="contact-form">
+                    <h2>Message Us Anytime</h2>
+                    <form id="contactForm">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <input type="text" id="name" asp-for="CustomerName" readonly class="form-control" required data-error="Please enter your name" placeholder="Name">
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <input type="text" onchange="checkEmail()" id="email" class="form-control" required data-error="Please enter your email" placeholder="Email">
+                                    <div id="error-email" class="help-block with-errors"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <input type="text" id="phone_number" asp-for="Phone" readonly required data-error="Please enter your number" class="form-control" placeholder="Your Phone No">
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <textarea class="form-control" id="message" cols="30" rows="6" required data-error="Write your message" placeholder="Your Message Here"></textarea>
+                                    <div class="help-block with-errors"></div>
+                                    <span id="errors"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" onclick="checkBoxFunction()" id="flexCheckDefault-1">
+                                    <label class="form-check-label" for="flexCheckDefault-1">
+                                        I accept all <a asp-action="TermsConditions" asp-controller="Other" asp-area="Customer">Terms & Conditions</a>
+                                    </label>
+                                    <div id="termRead"></div>
+                                </div>
+
+                                <div>
+                                    @{
+                                        if (User.Identity.IsAuthenticated)
+                                        {
+                                                    <button type="submit" id="submitBtn" class="default-btn">
+                                                        Send Message
+                                                    </button>
+                                        }else{
+                                                    <a class="default-btn" id="submitBtn" asp-action="Login" asp-controller="Account">Send Message</a>
+                                        }
+                                    }
+
+                                    <div id="msgSubmit" class="h3 text-center hidden"></div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Contact Area -->
+<!-- Start Map Area -->
+<div class="map-area pb-100">
+    <div class="container">
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3308.638864366721!2d-118.29393148478701!3d33.97612058062665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c82cee6d11f3%3A0x5cc587a160589911!2s7011%20Vermont%20Ave%2C%20Los%20Angeles%2C%20CA%2090044%2C%20USA!5e0!3m2!1sen!2sbd!4v1643890970102!5m2!1sen!2sbd"></iframe>
+        </div>
+    </div>
+</div>
+<!-- End Map Area -->
+<!-- Start Started Area -->
+@if(User.Identity.IsAuthenticated){
+    
+}else{
+<div class="started-area bg-color-ee6a3e">
+    <div class="container">
+        <div class="started-bg">
+            <div class="started-content">
+                <h3>Ready To Get Started?</h3>
+                <p>Explore BITR Payments, or create an account instantly and start accepting payments. You can also contact us to design a custom package for your new online business.</p>
+
+                <div class="started-btn">
+                    <a asp-controller="Account" asp-action="Login" asp-area="Customer" class="default-btn">
+                        Start Now
+                    </a>
+                    <a asp-controller="Home" asp-action="ContactUs" asp-area="Customer" class="default-btn active">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+@*
+            <img src="/~assets/images/started-shape-1.png" class="shape shape-1" alt="Image">
+            <img src="/~assets/images/started-shape-2.png" class="shape shape-2" alt="Image">
+            <img src="/~assets/images/started-shape-3.png" class="shape shape-3" alt="Image">*@
+        </div>
+    </div>
+</div>
+}
+<!-- End Started Area -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        let checkBoxFunction = () => {
+            var name = $("#name").val();
+            var email = $("#email").val();
+            var phone_number = $("#phone_number").val();
+            var message = $("#message").val();
+            var checkBox = $("#flexCheckDefault-1")[0].checked;
+            if (name != "" && email != "" && phone_number != "" && message != "") {
+                $("#errors").html("");
+                if(checkBox){
+                    $("#termRead").html("");
+                }else{
+                    $("#termRead").html("<b style='color:red;'>Please accept our Term</b>");
+                }
+            } else {
+                $("#flexCheckDefault-1").prop("checked", false);
+                $("#errors").html("<b style='color:red;'>Please fill all blank</b>");
+                $("#termRead").html("");
+            }
+        }
+        function checkEmail() {
+            var email = $("#email").val();
+            $.ajax({
+                type: "GET",
+                url: "/checkEmail",
+                data: { email: email },
+                success: function (respone) {
+                    if (respone.success) {
+
+                    } else {
+                        $("#error-email").html("<b style='color:red;font-size:13px;'><i style='font-size: 14px;' class='bi bi-info-circle'></i>&nbsp;Email not exists.Try another email!</b>");
+                    }
+                }
+            })
+        }
+    </script>
+}
+
+

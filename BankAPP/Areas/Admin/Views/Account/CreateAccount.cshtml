@@ -1,0 +1,32 @@
+﻿@model BankModel.Account
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-8 offset-2">
+            <div class="d-flex flex-column justify-content-center">
+                <h1 class="text-center">Register account</h1>
+
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row" asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-control">
+                        <input asp-for="@Model.CustomerId" id="create-account-accountNo" class="form-control input-center" type="text" placeholder="Account No" required>
+						<span asp-validation-for="@Model.CustomerId"></span>
+                    </div>
+                    <div class="form-control">
+                        <input asp-for="@Model.AccountNo" id="create-account-accountNo" class="form-control input-center" type="text" placeholder="Account No" required>
+						<span asp-validation-for="@Model.AccountNo"></span>
+                    </div>
+                    <div class="form-control">
+                        <input asp-for="@Model.Balance" id="create-account-accountNo" class="form-control input-center" type="text" placeholder="Account No" required>
+						<span asp-validation-for="@Model.Balance"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewData["Title"] = "Features Details";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+}
+
+		<!-- Start Unified platform Area -->
+		<div class="unified-platform-area ptb-100">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-lg-6">
+						<div class="unified-img four wow fadeInLeft delay-0-4s mr-50">
+							<img src="assets/images/unified-img-4.png" alt="Image">
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="unified-platform-content ml-30 wow fadeInRight delay-0-4s">
+							<div class="mb-30">
+								<span class="top-title">Send Money</span>
+								<h2>You Can Send Money From Any Place Of The World</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mattis mi suscipit bibendum pellentesque ut condimentum consectetur eleifend velit. Ut volutpat risus aliquet non commodo commodo habitant lacus dolor sit amet, consectetur adipiscing.</p>
+							</div>
+
+							<div class="row">
+								<div class="col-lg-6 col-sm-6">
+									<div class="single-unified-platform">
+										<i class="flaticon-wallet"></i>
+										<h3>Split The Necessities</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullana integer sagittis, eleifend ipsum dolor sit dolor sit.</p>
+									</div>
+								</div>
+								<div class="col-lg-6 col-sm-6">
+									<div class="single-unified-platform">
+										<i class="flaticon-id-card"></i>
+										<h3>Pay For Business</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullana integer sagittis, eleifend ipsum dolor sit dolor sit.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Unified platform Area -->
+
+		<!-- Start Fast & Secure Area -->
+		<div class="fast-secure-area bg-color-fff9f8 ptb-100">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-lg-6">
+						<div class="fast-secure-content">
+							<span class="top-title">Fast & Secure</span>
+							<h2>A Fast And Secure Way To Send Money On The Go From The Us</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sed arcu morbi id quis. Quis odio tortor at pharetra, sit vel urna, nec egestas.</p>
+
+							<div class="row">
+								<div class="col-lg-6 col-sm-6">
+									<ul>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											Free Plan Available
+										</li>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											Debit Mastercard Included
+										</li>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											Commitment Free
+										</li>
+									</ul>
+								</div>
+								<div class="col-lg-6 col-sm-6">
+									<ul>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											Full data privacy compliance
+										</li>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											100% transparent costs 
+										</li>
+										<li>
+											<i class="flaticon-check-mark"></i>
+											Real-time spending overview 
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							@if(User.Identity.IsAuthenticated){
+								<a asp-controller="Home" asp-area="Customer" asp-action="TransferMoney" class="default-btn">
+									Try Now
+								</a>
+							}
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="fast-mgs">
+							<img src="assets/images/download.png" alt="Image">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Fast & Secure Area -->
+
+		<!-- Start Unified platform Area -->
+		<div class="unified-platform-area ptb-100">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-lg-6">
+						<div class="unified-img five wow fadeInLeft delay-0-4s mr-50">
+							<img src="assets/images/unified-img-2.png" alt="Image">
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="unified-platform-content ml-30 wow fadeInRight delay-0-4s">
+							<div class="mb-30">
+								<span class="top-title">Unified platform</span>
+								<h2>A Fully Integrated Suite Of Every Product Payments</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mattis mi suscipit bibendum pellentesque ut condimentum consectetur eleifend velit. Ut volutpat risus aliquet non commodo commodo habitant lacus.</p>
+							</div>
+
+							<div class="row">
+								<div class="col-lg-6 col-sm-6">
+									<div class="single-unified-platform">
+										<i class="flaticon-wallet"></i>
+										<h3>Split The Necessities</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullana integer sagittis, eleifend ipsum dolor sit dolor sit.</p>
+									</div>
+								</div>
+								<div class="col-lg-6 col-sm-6">
+									<div class="single-unified-platform">
+										<i class="flaticon-id-card"></i>
+										<h3>Pay For Business</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullana integer sagittis, eleifend ipsum dolor sit dolor sit.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Unified platform Area -->
+
+		<!-- Start Started Area -->
+		@if(User.Identity.IsAuthenticated){
+    
+}else{
+<div class="started-area bg-color-ee6a3e">
+    <div class="container">
+        <div class="started-bg">
+            <div class="started-content">
+                <h3>Ready To Get Started?</h3>
+                <p>Explore BITR Payments, or create an account instantly and start accepting payments. You can also contact us to design a custom package for your new online business.</p>
+
+                <div class="started-btn">
+                    <a asp-controller="Account" asp-action="Login" asp-area="Customer" class="default-btn">
+                        Start Now
+                    </a>
+                    <a asp-controller="Home" asp-action="ContactUs" asp-area="Customer" class="default-btn active">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+@*
+            <img src="/~assets/images/started-shape-1.png" class="shape shape-1" alt="Image">
+            <img src="/~assets/images/started-shape-2.png" class="shape shape-2" alt="Image">
+            <img src="/~assets/images/started-shape-3.png" class="shape shape-3" alt="Image">*@
+        </div>
+    </div>
+</div>
+}
+		<!-- End Started Area -->
+

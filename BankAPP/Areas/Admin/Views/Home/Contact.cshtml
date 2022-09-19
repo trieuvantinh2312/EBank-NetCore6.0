@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Contact</h1>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Waitting</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Replayed</button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        <ejs-grid id="contact"  allowPdfExport="true" dataSource="@ViewBag.listContWaitting" allowPaging="true"
+                  allowSorting="true" allowFiltering="true">
+            <e-grid-pagesettings pageSize="10"></e-grid-pagesettings>
+            <e-grid-columns>
+                <e-grid-column headerText="User Contact" field="UserContact"></e-grid-column>
+                <e-grid-column headerText="Phone" field="UserPhone"></e-grid-column>
+                <e-grid-column headerText="Email" field="Email"></e-grid-column>
+                <e-grid-column headerText="Content" field="Description"></e-grid-column>
+                <e-grid-column headerText="Status" template="#status"></e-grid-column>
+                <e-grid-column headerText="Date" format="yMd" field="DateContact"></e-grid-column>
+                <e-grid-column headerText="Action" template="#action"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <ejs-grid id="contacts" dataSource="@ViewBag.listContSuccess" allowPaging="true"
+                  allowSorting="true" allowFiltering="true">
+            <e-grid-pagesettings pageSize="10"></e-grid-pagesettings>
+            <e-grid-columns>
+                <e-grid-column headerText="User Contact" field="UserContact"></e-grid-column>
+                <e-grid-column headerText="Phone" field="UserPhone"></e-grid-column>
+                <e-grid-column headerText="Email" field="Email"></e-grid-column>
+                <e-grid-column headerText="Content" field="Description"></e-grid-column>
+                <e-grid-column headerText="Status" template="#status"></e-grid-column>
+                <e-grid-column headerText="Date" format="yMd" field="DateContact"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+    </div>
+</div>
+<script id="status" type="text/x-template">
+    ${if(Status == "waiting")}
+    <span class="badge bg-warning text-dark text-center">Waitting</span>
+    ${else}
+    <span class="badge bg-success text-center">Success</span>
+    ${/if}
+</script>
+<script id="action" type="text/x-template">
+    ${if(Status == "waiting")}
+    <a href="/Replay_Contact?contactId=${ContactId}" class="btn btn-danger">Reply</a>
+    ${/if}
+</script>

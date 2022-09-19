@@ -1,0 +1,56 @@
+﻿@model BankModel.ViewModel.ChequeModel
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+<style>
+    .cheque {
+        background-image: url(https://i.imgur.com/uLEEhxl.png);
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 100%;
+        min-height: 450px;
+        height: 300px;
+        background-position: center;
+    }
+
+        .cheque .chequeInfo {
+            position: relative;
+            top: 0;
+        }
+
+    .chequeInfo .name {
+        position: absolute;
+        top: 153px;
+        left: 200px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .chequeInfo .date {
+        position: absolute;
+        top: 63px;
+        left: 670px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .chequeInfo .usd {
+        position: absolute;
+        top: 207px;
+        left: 200px;
+        font-weight: bold;
+        color: black;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="cheque">
+            <div class="chequeInfo">
+                <p class="name">@Model.Customer.CustomerName</p>
+                <p class="usd">$@Model.Cheque.Amount</p>
+                <p class="date">@Model.Cheque.FormatDate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>

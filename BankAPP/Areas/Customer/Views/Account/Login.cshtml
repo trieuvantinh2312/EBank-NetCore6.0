@@ -1,0 +1,126 @@
+﻿@using BankModel
+@model Customer
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+    var url = ViewBag.url == null ? "" : ViewBag.url;
+}
+<!-- Start User Area -->
+<div class="user-area ptb-100">
+    <div class="container">
+        <form class="user-form" id="loginForm">
+            <h3>Login</h3>
+            <input hidden value="@url" id="url" />
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input class="form-control" type="text" id="username" name="username">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input class="form-control" type="password" name="password" id="password">
+                    </div>
+                </div>
+                <div>
+                    <span id="errorMessage"></span>
+                </div>
+                <div class="col-12">
+                    <button class="default-btn" type="submit">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- End User Area -->
+<!-- Start Started Area -->
+@if(User.Identity.IsAuthenticated){
+    
+}else{
+<div class="started-area bg-color-ee6a3e">
+    <div class="container">
+        <div class="started-bg">
+            <div class="started-content">
+                <h3>Ready To Get Started?</h3>
+                <p>Explore BITR Payments, or create an account instantly and start accepting payments. You can also contact us to design a custom package for your new online business.</p>
+
+                <div class="started-btn">
+                    <a asp-controller="Account" asp-action="Login" asp-area="Customer" class="default-btn">
+                        Start Now
+                    </a>
+                    <a asp-controller="Home" asp-action="ContactUs" asp-area="Customer" class="default-btn active">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+@*
+            <img src="/~assets/images/started-shape-1.png" class="shape shape-1" alt="Image">
+            <img src="/~assets/images/started-shape-2.png" class="shape shape-2" alt="Image">
+            <img src="/~assets/images/started-shape-3.png" class="shape shape-3" alt="Image">*@
+        </div>
+    </div>
+</div>
+}
+<!-- End Started Area -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(() => {
+            $("#loginForm").validate({
+                rules: {
+                    username: {
+                        required: true,
+                    },
+                    password: {
+                        required: true,
+                    }
+                }, messages: {
+                    username: {
+                        required: "Please enter username"
+                    },
+                    password: {
+                        required: "Please enter password"
+                    }
+                }
+            });
+            $("#loginForm").on("submit", (e) => {
+                e.preventDefault();
+                if ($("#loginForm").valid()) {
+                    var user = $("#username").val();
+                    var pass = $("#password").val();
+                    var url = $("#url").val();
+                    $.ajax({
+                        url: "/login",
+                        data: {
+                            cus: {
+                                UserName: user,
+                                Password: pass
+                            }, returnUrl: url
+                        },
+                        type: "POST",
+                        success: (data) => {
+                            if (data.status == true) {
+                                if (data.url != null) {
+                                    window.location.href = data.url;
+                                } else {
+                                    window.location.href = "/";
+                                }
+                            }else{
+                                $("#errorMessage").html("<b style='color:red'>"+data.msg+"</b>");
+                            }
+
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+    }
+
+

@@ -1,0 +1,93 @@
+﻿@model IEnumerable<BankModel.Transaction>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var accountNo = ViewBag.accountNo == null ? "" : ViewBag.accountNo;
+}
+
+<h1>List Transaction</h1>
+<div class="row">
+    <div class="col-12">
+        <input hidden id="accountNo" value="@accountNo" />
+        <form method="post" class="float-start">
+            <ejs-dropdownlist id="account" name="accountNo" width="400px" cssClass="mb-3" dataSource="@ViewBag.account" allowFiltering="true" placeholder="Select a account" popupHeight="220px">
+                <e-dropdownlist-fields value="AccountNo"></e-dropdownlist-fields>
+            </ejs-dropdownlist>
+            <button type="submit" class="btn btn-info ml-2" style="margin-bottom:10px">Find</button>
+        </form>
+        <button onclick="PrintTransaction()" class="btn btn-success ml-3">Export to PDF</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <ejs-grid id="transaction" dataSource="@Model" allowPaging="true"
+                  allowSorting="true">
+            <e-grid-pagesettings pageSize="10"></e-grid-pagesettings>
+            <e-grid-columns>
+                <e-grid-column headerText="Transaction Id" field="TransactionId"></e-grid-column>
+                <e-grid-column headerText="Transaction Code" field="TransactionCode"></e-grid-column>
+                <e-grid-column headerText="Amount" field="Amount"></e-grid-column>
+                <e-grid-column headerText="From Account" field="FromAccount"></e-grid-column>
+                <e-grid-column headerText="To Account" field="ToAccount"></e-grid-column>
+                <e-grid-column headerText="Tranfer Date" field="FormatDate"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        let PrintTransaction = () => {
+            Swal.fire({
+                title: "Please wait...",
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+            })
+            var accountNo = $("#accountNo").val();
+            $.ajax({
+                url: "/PrintPdfAdmin",
+                data: {
+                    accountNo: accountNo,
+                },
+                type: "GET",
+                success: (data) => {
+                    if (data.status == true) {
+                        Swal.fire("Success", data.msg, "success")
+                        base64toPDF(data.data);
+                    } else {
+                        Swal.fire("Failed", data.msg, "error")
+                    }
+                }
+            })
+        }
+
+        let base64toPDF = (data) => {
+            var bufferArray = base64ToArrayBuffer(data);
+            var blobStore = new Blob([bufferArray], { type: "application/pdf" });
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blobStore);
+                return;
+            }
+            var data = window.URL.createObjectURL(blobStore);
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = data;
+            link.download = "Transaction.pdf";
+            link.click();
+            window.URL.revokeObjectURL(data);
+            link.remove();
+        }
+
+        let base64ToArrayBuffer = (data) => {
+            var bString = window.atob(data);
+            var bLength = bString.length;
+            var bytes = new Uint8Array(bLength);
+            for (var i = 0; i < bLength; i++) {
+                var ascii = bString.charCodeAt(i);
+                bytes[i] = ascii;
+            }
+            return bytes;
+        }
+    </script>
+}

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\Template\" />
+    <Content Remove="wwwroot\images\chat\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
+    <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="20.2.0.43" />
+    <PackageReference Include="Twilio" Version="5.79.0" />
+    <PackageReference Include="MailKit" Version="3.3.0" />
+    <PackageReference Include="MimeKit" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Customer\Data\" />
+    <Folder Include="Areas\Customer\Models\" />
+    <Folder Include="SignalRServer\" />
+    <Folder Include="Mail\" />
+    <Folder Include="wwwroot\images\NewsImage\SlideImage\" />
+    <Folder Include="wwwroot\images\chat\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BankModel\BankModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="SignalRServer\" />
+    <None Remove="Syncfusion.EJ2.AspNet.Core" />
+    <None Remove="MailKit" />
+    <None Remove="MimeKit" />
+    <None Remove="Mail\" />
+  </ItemGroup>
+</Project>

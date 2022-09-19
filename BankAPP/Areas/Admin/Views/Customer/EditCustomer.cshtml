@@ -1,0 +1,65 @@
+﻿@model BankModel.Customer
+@{
+    ViewData["Title"] = "Edit Customer";
+    ViewData["Header"] = "Edit Customer";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-8 offset-2">
+            <div class="d-flex flex-column justify-content-center">
+                <div class=" font-bold" style="border-radius:5px">
+                    <div class="text-center font-bold mb-4" style="border-radius:5px">
+                        <h1 class="">CUSTOMERS</h1>
+                        <hr style="font-weight:bold" />
+                        <span>@ViewData["Header"]</span>
+                    </div> 
+                </div>  
+
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row" asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input hidden asp-for="@Model.CustomerId" value="@Model.CustomerId" />
+                    <input hidden asp-for="@Model.Status" value="@Model.Status" />
+                    <input hidden asp-for="@Model.Attempt" value="@Model.Attempt" />
+                    <input hidden asp-for="@Model.UserName" value="@Model.UserName" />
+                    <input hidden asp-for="@Model.Avatar" value="@Model.Avatar" />
+                    <div class="row mt-10">
+                        <div class="mb-3 col-6">
+                            <ejs-textbox id="fullName" ejs-for="@Model.CustomerName" placeholder="Full Name" floatLabelType="Always"></ejs-textbox>
+                            <span class="text-danger" asp-validation-for="@Model.CustomerName"></span>
+                        </div>
+                        <div class="mb-3 col-6">
+                            <div id="dob" class="datepicker-section">
+                                <div id="datepicker-control">
+                                    <ejs-datepicker id="datepicker" ejs-for="@Model.Dob" placeholder="Date of birth" floatLabelType="Always"></ejs-datepicker>
+									<span class="text-danger" asp-validation-for="@Model.Dob"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 col-6">
+                            <ejs-textbox id="email"  ejs-for="@Model.Email" placeholder="Email" floatLabelType="Always"></ejs-textbox>
+                            <span class="text-danger" asp-validation-for="@Model.Email"></span>
+                        </div>
+                        <div class="mb-3 col-6">
+                            <ejs-textbox id="phone" ejs-for="@Model.Phone" placeholder="Phone" floatLabelType="Always"></ejs-textbox>
+                            <span class="text-danger" asp-validation-for="@Model.Phone"></span>
+                        </div>
+                        <div class="mb-3 col-12">
+                            <ejs-textbox id="address" ejs-for="@Model.Address" placeholder="Address" floatLabelType="Always"></ejs-textbox>
+                            <span class="text-danger" asp-validation-for="@Model.Address"></span>
+                        </div>
+
+                        <div class="mb-3 col-4 offset-5">
+                            <ejs-button id="submit" type="submit" cssClass="e-primary" content="Submit"></ejs-button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+
+}

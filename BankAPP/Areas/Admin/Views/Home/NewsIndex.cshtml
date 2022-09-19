@@ -1,0 +1,69 @@
+﻿@model IEnumerable<BankModel.News>
+@{
+    ViewData["Title"] = "NewsIndex";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class=" font-bold" style="border-radius:5px">
+        <h1 class="mr-15">List News</h1>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <ejs-grid id="product" dataSource="@Model" allowPaging="true"
+                      allowSorting="true" allowFiltering="true">
+                <e-grid-pagesettings pageSize="8"></e-grid-pagesettings>
+                <e-grid-columns>
+                    <e-grid-column headerText="News Id" field="NewId"></e-grid-column>
+                    <e-grid-column headerText="Title" field="Title"></e-grid-column>
+                    <e-grid-column headerText="Description" field="Description"></e-grid-column>
+                    <e-grid-column headerText="Create Date" field="CreateDate"></e-grid-column>
+                    <e-grid-column headerText="Image Main" template="#mainImage"></e-grid-column>
+                    <e-grid-column headerText="Image Silde" template="#slideImage"></e-grid-column>
+                    <e-grid-column headerText="Status" template="#action"></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+
+@section css{
+    <style>
+    </style>
+}
+
+    @section scripts{
+    <script id="slideImage" type="text/x-template">
+        <img height="50" width="100" src="${ImageSlide}" />
+    </script>
+    <script id="mainImage" type="text/x-template">
+        <img width="100" height="50" src="${ImageMain}" />
+    </script>
+    <script id="action" type="text/x-template">
+        <div class="form-check form-switch">
+            ${if(Status=="Active")}
+                <input class="form-check-input" onchange="updateStatus(${NewId})" type="checkbox" id="switch_${NewId}" checked>
+            ${else}
+                <input class="form-check-input" onchange="updateStatus(${NewId})" type="checkbox" id="switch_${NewId}">
+            ${/if}
+        </div>
+    </script>
+    <script type="text/javascript">
+        let updateStatus = (id) => {
+            var active = $("#switch_" + id).prop("checked")
+            setTimeout(() => {
+                $.ajax({
+                    url: "/updateNewsStatus",
+                    data: {
+                        active: active,
+                        id: id
+                    },
+                    type: "POST",
+                    success: (response) => {
+                    }
+                })
+            }, 1000)
+
+        }
+    </script>
+}

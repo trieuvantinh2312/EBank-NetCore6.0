@@ -1,0 +1,420 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var totalCus = ViewBag.totalCus == null ? 0 : ViewBag.totalCus;
+    var totalMoneyByTran = ViewBag.totalMoneybyCus == null ? 0 : ViewBag.totalMoneybyCus;
+    var totalConTract = ViewBag.totalConTract == null ? 0 : ViewBag.totalConTract;
+    var totalCheque = ViewBag.totalCheque == null ? 0 : ViewBag.totalCheque;
+}
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <button onclick="PrintReport()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+            </button>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Customer
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@totalCus</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Money Spent
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@totalMoneyByTran</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Cheque
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@totalCheque</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Total Contact
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@totalConTract</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div id="content">
+
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                <!-- Content Row -->
+                <div class="row">
+
+                    <div class="col-xl-8 col-lg-7" style="height:500px">
+                        <!-- Area Chart -->
+                        <div class="card shadow mb-4">
+                            @*                                <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
+                            </div>
+                            <div class="card-body">
+                            <div class="chart-area">
+                            <canvas id="myAreaChart"></canvas>
+                            </div>
+                            <hr>
+                            Styling for the area chart can be found in the
+                            <code>/js/demo/chart-area-demo.js</code> file.
+                            </div>*@
+                            <div style="width: 780px; height: 500px;">
+                                <canvas id="myChart" style="width:750px!important"></canvas>
+                            </div>
+                        </div>
+                        <div class="row mb-3 ml-2" style="height:300px;width:1200px">
+                            <div class="col-6">
+                                <canvas id="myChart1" style="width:100%;max-width:600px"></canvas>
+
+                            </div>
+                            <div class="col-6" @*style="background-color:yellow"*@>
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">New Contact</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-bar">
+                                        <ejs-grid dataSource="@ViewBag.listWaitingContact" id="listContact">
+                                            <e-grid-columns>
+                                                <e-grid-column headerText="User Name" field="UserContact"></e-grid-column>
+                                                <e-grid-column headerText="Status" field="Status"></e-grid-column>
+                                                <e-grid-column headerText="Date" field="FormatDate"></e-grid-column>
+                                            </e-grid-columns>
+                                        </ejs-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Bar Chart -->
+                        <div class="card shadow mb-4" style="width:1200px;height:500px">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Top Customer by Total Transaction</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-bar">
+                                    <ejs-grid dataSource="@ViewBag.ListCustomer" id="list">
+                                        <e-grid-columns>
+                                            <e-grid-column headerText="Avatar" template="#avatar"></e-grid-column>
+                                            <e-grid-column headerText="Customer Name" field="CustomerName"></e-grid-column>
+                                            <e-grid-column headerText="Total Transaction" field="Count"></e-grid-column>
+                                            <e-grid-column headerText="Money" field="totalMoneyByTransaction"></e-grid-column>
+                                        </e-grid-columns>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Donut Chart -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow mb-4">
+                            @*                                <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                            <div class="chart-pie pt-4">
+                            <canvas id="myPieChart"></canvas>
+                            </div>
+                            <hr>
+                            Styling for the donut chart can be found in the
+                            <code>/js/demo/chart-pie-demo.js</code> file.
+                            </div>*@
+                            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+
+
+    </div>
+
+
+    <!-- End of Page Wrapper -->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" asp-action="logoutAdmin" asp-controller="Account">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script id="avatar" type="text/x-template">
+        <div>
+            <img style="border-radius:50%;width:50px;height:50px" src="/images/${Avatar}" />
+        </div>
+
+    </script>
+    <script type="text/javascript">
+        var PrintReport = () => {
+            $.ajax({
+                url: "/PrintReport",
+                type: "GET",
+                success: function (respone) {
+                    base64toPDF(respone)
+                }
+            })
+        }
+        let base64toPDF = (data) => {
+            var bufferArray = base64ToArrayBuffer(data);
+            var blobStore = new Blob([bufferArray], { type: "application/pdf" });
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blobStore);
+                return;
+            }
+            var data = window.URL.createObjectURL(blobStore);
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = data;
+            link.download = "Report.pdf";
+            link.click();
+            window.URL.revokeObjectURL(data);
+            link.remove();
+        }
+
+        let base64ToArrayBuffer = (data) => {
+            var bString = window.atob(data);
+            var bLength = bString.length;
+            var bytes = new Uint8Array(bLength);
+            for (var i = 0; i < bLength; i++) {
+                var ascii = bString.charCodeAt(i);
+                bytes[i] = ascii;
+            }
+            return bytes;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    @section scripts{
+
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            var avg = []
+            var total = 0
+            var obj = null
+            window.onload = function () {
+                $.ajax({
+                    url: "/AvgAddress",
+                    type: "GET",
+                    success: function (respone) {
+                        for (var item of respone) {
+                            total += item.count
+                        }
+                        for (var item of respone) {
+                            var sum = (item.count / total) * 100
+                            var obj = { y: 0, label: '' }
+                            obj.y = sum
+                            obj.label = item.address
+                            console.log(obj)
+                            avg.push(obj)
+                        }
+                        console.log(avg)
+                        renderAvg(avg)
+                    }
+                })
+            }
+
+            function renderAvg(avg) {
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    animationEnabled: true,
+                    title: {
+                        text: "Address rate of customer"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 240,
+                        yValueFormatString: "##0.00\"%\"",
+                        indexLabel: "{label} {y}",
+                        dataPoints: avg,
+                    }]
+                });
+                chart.render();
+            }
+        </script>
+
+        <script>
+            var count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            var month = []
+            $(document).ready(
+                function () {
+                    $.ajax({
+                        url: "/total",
+                        type: "GET",
+                        success: function (respone) {
+                            for (var item of respone) {
+                                count.splice(item.month - 1, 0, item.count)
+                            }
+                            get(count);
+
+                        }
+                    })
+                }
+            )
+            function get(count) {
+                const labels = [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ];
+
+                const data = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total new customer by month',
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: count,
+
+                    }]
+                };
+
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {}
+                };
+                const myChart = new Chart(
+                    document.getElementById('myChart'),
+                    config
+                );
+            }
+        </script>
+        <script>
+            var xValues = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var barColors = ["red", "green", "blue", "orange", "brown", "Magenta", "Yellow", "tomato", "chartreuse", "lightseagreen", "dodgerblue", "hotpink"];
+            $(document).ready(
+                function () {
+                    $.ajax({
+                        url: "/GetAll",
+                        type: "GET",
+                        success: function (respone) {
+                            for (var item of respone) {
+                                count.splice(item.month - 1, 0, item.count)
+                            }
+                            console.log(count)
+                            getContact(count)
+                        }
+                    })
+                }
+            )
+
+            function getContact(count) {
+                new Chart("myChart1", {
+                    type: "bar",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: count
+                        }]
+                    },
+                    options: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: "Total Contact"
+                        }
+                    }
+                });
+            }
+        </script>
+    }

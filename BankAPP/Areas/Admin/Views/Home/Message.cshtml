@@ -1,0 +1,140 @@
+﻿@model IEnumerable<BankModel.Customer>
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+@section css{
+    <link href="~/css/chat.css" rel="stylesheet" type="text/css">
+}
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div style="height:80vh" class="card chat-app">
+                <div id="plist" class="people-list">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Search...">
+                    </div>
+                    <ul style="overflow-y: scroll; height: 70vh;" id="contain_icon" class="list-unstyled chat-list mt-2 mb-0">
+                        @foreach (var cus in Model)
+                        {
+                            <li class="clearfix icon_user" id="activeUser_@cus.CustomerId" data-customerId="@cus.CustomerId">
+                                <img src="/images/@cus.Avatar" alt="avatar">
+                                <div class="about seen_@cus.CustomerId" id="seen_@cus.CustomerId" style="display: flex;justify-content: space-between;width: 135px;height: 41px;align-items: center;">
+                                    <div class="name">@cus.CustomerName</div>
+                                    @*<div style="width:10px;height:10px;border-radius:50%;background-color:red;margin-left:2%"></div>*@
+                                    @*<div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>*@
+                                </div>
+                                
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div id="box_chat_admin" style="height:80vh" class="chat">
+                    <div style="height:100%" class="d-flex justify-content-center align-items-center">
+                        Hi Welcome to chat
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    
+
+    <script>
+        const icon_user = document.querySelectorAll('.icon_user');
+        var count = 0;
+        for (var i = 0; i < icon_user.length; i++) {
+            icon_user[i].addEventListener('click', function (event) {
+                for (var i = 0; i < icon_user.length; i++) {
+                    if (icon_user[i] !== event.target) {
+                        icon_user[i].classList.remove("active");
+
+                    } else {
+                        icon_user[i].classList.add("active");
+                        var cusId = icon_user[i].getAttribute('data-customerId')
+                        var box_chat = document.getElementById('box_chat_admin');
+                        $("#seenAppend_" + cusId).remove();
+                        var string = "";
+                        $.ajax({
+                            type: "GET",
+                            url: "/getListMessage",
+                            data: { cusId: cusId },
+                            success: (res) => {
+                                string += `<div class="chat-header clearfix">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                                        <img src="/images/${res.customer.avatar}" alt="avatar">
+                                    </a>
+                                    <div class="chat-about">
+                                        <h6 class="m-b-0">${res.customer.customerName}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="overflow-y:scroll;height:70%" id="chat_history" class="chat-history">
+                            <ul id="list_chat_${res.customer.customerId}" class="m-b-0">`
+                                for (var mess of res.listMess) {
+                                    if (mess.sender == @ViewBag.adminId) {
+                                        count++;
+                                        string += `<li class="clearfix">
+                                        <div class="message-data text-right">
+                                            <span class="message-data-time">${mess.formatDate}</span>
+                                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar">
+                                        </div>
+                                        <div class="message other-message float-right">${mess.messageChat} </div>
+                                    </li>`
+                                    } else {
+                                        count++;
+                                        string +=`<li class="clearfix">
+                                    <div class="message-data">
+                                        <span class="message-data-time">${mess.formatDate}</span>
+
+                                    </div>
+                                    <div class="message my-message"> ${mess.messageChat} </div>
+                                </li>`
+                                    }
+                                }
+                                string += ` </ul>
+                        </div>
+                        <div class="chat-message clearfix">
+                                <div class="input-group mb-0">
+                                    <input type="hidden" value="${res.customer.customerId}" id="cusId" />
+                                    <input type="text" id="message_to_user" class="form-control" placeholder="Enter text here...">
+                                    <button onclick="submitFormMessage()"><i class="bi bi-send-fill"></i></button>
+                                </div>
+                        </div>`
+                                box_chat.innerHTML = string;
+                                $('#chat_history').scrollTop($('#chat_history')[0].scrollHeight);
+                            }
+                        })
+
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function submitFormMessage() {
+            var cusId = $('#cusId').val();
+            var message_to_user = $('#message_to_user').val();
+            $.ajax({
+                type: "POST",
+                url: "/sendToUser",
+                data: { cusId: cusId, message_to_user: message_to_user },
+                success: (res) => {
+                    if (res.success) {
+                        $('#message_to_user').val(null);
+                    }
+                }
+            })
+        }
+    </script>
+
+
+}

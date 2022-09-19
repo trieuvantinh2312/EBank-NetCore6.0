@@ -1,0 +1,27 @@
+﻿@model List<BankModel.Card>
+@{
+    ViewData["Title"] = "Cards";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">List Card</h1>
+<div class = "text-center" style="color:Red"></div>
+
+<div class="container">
+	<div class="row"><a asp-area="Admin" asp-controller="Card" asp-action="CreateCard">Create new Card..</a></div>
+    <div class="row">
+        <div class="col-12">
+            <ejs-grid id="product" dataSource="@Model" allowPaging="true"
+                      allowSorting="true" allowFiltering="true">
+                <e-grid-pagesettings pageSize="5"></e-grid-pagesettings>
+                <e-grid-columns>
+                    <e-grid-column headerText="Title" field="Title"></e-grid-column>
+                    <e-grid-column headerText="Brand" field="Brand"></e-grid-column>
+                    <e-grid-column headerText="Description"  field="Description">
+                    </e-grid-column>
+                    <e-grid-column headerText="CreatedDate" field="CreatedDate" typeof="date" format="MMM-dd-yy"></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+</div>

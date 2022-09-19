@@ -1,0 +1,58 @@
+﻿@model IEnumerable<BankModel.Customer>
+@{
+    ViewData["Title"] = "Customers";
+    ViewData["Header"] = "All Customers";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class=" font-bold" style="border-radius:5px">
+        <div class="text-center font-bold" style="border-radius:5px">
+            <h1 class="">CUSTOMERS</h1>
+            <hr style="font-weight:bold" />
+            <span>@ViewData["Header"]</span>
+        </div> 
+    </div>  
+    <br />
+    <div class="mb-3">
+        <a asp-action="CreateCustomer" id="create-customer" class="btn btn-success"><i class="bi bi-plus-circle"> Create New</i></a>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <ejs-grid id="product" dataSource="@Model" allowPaging="true"
+                      allowSorting="true" allowFiltering="true">
+                <e-grid-pagesettings pageSize="8"></e-grid-pagesettings>
+                <e-grid-columns>
+                    <e-grid-column headerText="Id" field="CustomerId"></e-grid-column>
+                    <e-grid-column headerText="Customer Name" field="CustomerName"></e-grid-column>
+                    <e-grid-column headerText="Date Of Birth" field="Dob"></e-grid-column>
+                    <e-grid-column headerText="Address"  field="Address"></e-grid-column>
+                    <e-grid-column headerText="Email" field="Email" ></e-grid-column>
+                    <e-grid-column headerText="Phone" field="Phone" ></e-grid-column>
+                    <e-grid-column headerText="UserName" field="UserName" ></e-grid-column>
+                    <e-grid-column headerText="Status" template="#status" ></e-grid-column>
+                    <e-grid-column headerText="Attempt" field="Attempt" ></e-grid-column>
+                    <e-grid-column headerText="Action" template="#action" ></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+
+@section css{
+    <style>       
+    </style>
+}
+
+@section scripts{
+    <script id="action" type="text/x-template">      
+        <a class="btn btn-primary" href="Customer/Details/${CustomerId}">Details</a>
+    </script>
+
+    <script id="status" type="text/x-template">
+        ${if(Status == "block")}
+            <span class="badge bg-warning text-dark text-center">Block</span>
+        ${else}
+            <span class="badge bg-success text-center">Normal</span>
+        ${/if}
+    </script>
+}

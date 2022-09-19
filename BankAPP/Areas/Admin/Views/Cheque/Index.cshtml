@@ -1,0 +1,77 @@
+﻿@model IEnumerable<BankModel.Cheque>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>List Cheque</h1>
+<div class="row">
+    <div class="col-12">
+        <ejs-grid id="product" dataSource="@Model" allowPaging="true"
+                  allowSorting="true" allowFiltering="true">
+            <e-grid-pagesettings pageSize="6"></e-grid-pagesettings>
+            <e-grid-columns>
+                <e-grid-column headerText="Id" field="Id"></e-grid-column>
+                <e-grid-column headerText="Amount" field="Amount"></e-grid-column>
+@*                <e-grid-column headerText="CustomerId" field="CustomerId"></e-grid-column>
+                <e-grid-column headerText="AccountId" field="AccountId"></e-grid-column>*@
+                <e-grid-column headerText="Date Create" field="CreatedDate"></e-grid-column>
+                <e-grid-column headerText="Status" field="Status"></e-grid-column>
+                <e-grid-column headerText="Action" template="#action"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+    </div>
+</div>
+
+@section scripts{
+    <script id="action" type="text/x-template">
+        <button class="btn btn-success" onclick="printCheque(${Id})">Print</button>
+    </script>
+    <script type="text/javascript">
+        let printCheque = (id) => {
+            $.ajax({
+                url: "/CheckCheque",
+                data: {
+                    id: id
+                }, type: "GET",
+                success: (data) => {
+                    if (data.status == true) {
+                        Swal.fire("Success",data.msg,"success")
+                        base64toPDF(data.cheque);
+                        window.location.reload()
+                    } else {
+                        Swal.fire("Failed",data.msg,"error")
+                    }
+                }
+            })
+        }
+
+        let base64toPDF = (data) => {
+            var bufferArray = base64ToArrayBuffer(data);
+            var blobStore = new Blob([bufferArray], { type: "application/pdf" });
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blobStore);
+                return;
+            }
+            var data = window.URL.createObjectURL(blobStore);
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = data;
+            link.download = "Cheque.pdf";
+            link.click();
+            window.URL.revokeObjectURL(data);
+            link.remove();
+        }
+
+        let base64ToArrayBuffer = (data) => {
+            var bString = window.atob(data);
+            var bLength = bString.length;
+            var bytes = new Uint8Array(bLength);
+            for (var i = 0; i < bLength; i++) {
+                var ascii = bString.charCodeAt(i);
+                bytes[i] = ascii;
+            }
+            return bytes;
+        }
+    </script>
+}

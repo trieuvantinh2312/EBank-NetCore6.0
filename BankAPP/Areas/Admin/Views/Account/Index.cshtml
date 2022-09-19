@@ -1,0 +1,31 @@
+﻿@model List<BankModel.Account>
+@{
+    ViewData["Title"] = "Accounts";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">List Accounts</h1>
+
+<div class = "text-center" style="color:Red"></div>
+<div class="container">
+	<div class="row"><a asp-area="Admin" asp-controller="Customer" asp-action="CreateCustomer">Register new Customer..</a></div>
+    <div class="row">
+        <div class="col-12">
+            <ejs-grid id="product" dataSource="@Model" allowPaging="true"
+                      allowSorting="true" allowFiltering="true">
+                <e-grid-pagesettings pageSize="5"></e-grid-pagesettings>
+                <e-grid-columns>
+                    <e-grid-column headerText="AccountId" field="AccountId"></e-grid-column>
+                     <e-grid-column headerText="AccountNo" field="AccountNo" ></e-grid-column>
+                    <e-grid-column headerText="Balance" field="Balance"></e-grid-column>
+                    <e-grid-column headerText="OpenDate"  field="OpenDate"></e-grid-column>
+                    <e-grid-column headerText="Status" field="Status" ></e-grid-column>
+                    <e-grid-column headerText="Status" field="Status" ></e-grid-column>
+                    <e-grid-column headerText="Attempt" field="Attempt" ></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+
+

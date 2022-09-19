@@ -1,0 +1,47 @@
+﻿@model BankModel.News
+@{
+    ViewData["Title"] = "NewsIndex";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var mainImageError = ViewBag.main == null ? "" : ViewBag.main;
+    var slideImageError = ViewBag.slide == null ? "" : ViewBag.slide;
+    var failedMsg = ViewBag.msg == null ? "" : ViewBag.msg;
+}
+<div class="container">
+    <div class="row">
+        <div class="col-8 offset-2">
+            <div class="d-flex flex-column justify-content-center">
+                <h1 class="text-center">Register new News</h1>
+                <span class="text-danger">@failedMsg</span>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row" asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row mt-10">
+                        <div class="mb-3 col-6">
+                            <div class="mb-3 col-6">
+                                <ejs-textbox id="title" ejs-for="Title" placeholder="Tiltle" floatLabelType="Always"></ejs-textbox>
+                                <span class="text-danger" asp-validation-for="Title"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3 col-6">
+                            <ejs-textbox id="description" ejs-for="Description" placeholder="Description" floatLabelType="Always"></ejs-textbox>
+                            <span class="text-danger" asp-validation-for="Description"></span>
+                        </div>
+                        <div class="mb-3 col-12">
+                            <label>Image Main</label>
+                            <ejs-uploader id="mainImage" autoUpload="false"></ejs-uploader>
+                            <span class="text-danger">@mainImageError</span>
+                        </div>
+                        <div class="mb-3 col-12">
+                            <label>Image Slide</label>
+                            <ejs-uploader id="slideImage" autoUpload="false"></ejs-uploader>
+                            <span class="text-danger" asp-validation-for="ImageSlide"></span>
+                            <span class="text-danger">@slideImageError</span>
+                        </div>
+                        <div class="mb-3 col-4 offset-5">
+                            <ejs-button id="submit" type="submit" cssClass="e-primary" content="Submit"></ejs-button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

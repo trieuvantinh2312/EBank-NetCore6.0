@@ -1,0 +1,372 @@
+﻿@model BankModel.Customer
+
+@{
+	BankModel.Account newAccount = new BankModel.Account();
+	ViewData["Title"] = "Details";
+	Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+	string active = "";
+}
+
+<div class="container row">
+	<div class="col col-xs-12 col-md-4">
+		<h2 class="text-center">Profile</h2>
+		<div class="card-container d-block mx-auto">
+			<p hidden class="customerId">@Model.CustomerId</p>
+			@if (Model.Status =="lock")
+			{
+				<span class="pro" style="background-color:red">@Model.Status.ToUpper()</span>
+			}else{
+				<span class="pro" style="background-color:green; color:white">@Model.Status.ToUpper()</span>
+			}
+			<img class="round" src="~/images/Card/chip.png" alt="user" />
+			<h3>@Model.CustomerName</h3>
+			<h6>@Model.Email</h6>
+			<p>@Model.Phone <br/> @Model.Dob.ToShortDateString()</p>
+			<div class="buttons">
+				@if (Model.Status == "lock"){
+					<button class="primary" id="status">
+						Unlock
+					</button>
+				}else{
+					<button class="primary" id="status">
+						Lock
+					</button>
+				}
+				<button class="primary ghost">
+					@Html.ActionLink("Edit", "EditCustomer", new { id = Model.CustomerId})
+				</button>
+			</div>
+			<div class="skills">
+				<h6>Address</h6>
+				<div class="text-center">@Model.Address</div>
+				@*<ul>
+					<li>string</li>
+					<li>string string</li>
+					<li>string string string</li>
+					<li>string</li>
+					<li>string</li>
+					<li>string</li>
+				</ul>*@
+			</div>
+		</div>
+	</div>
+    <div class="col col-xs-12 col-sm-8 col-lg-7 offset-lg-1">
+        <h2 class="text-center">Accounts/Cards</h2>
+		<div class="d-block mx-auto">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs" id="navtab-account">
+				@foreach (var account in Model.Accounts)
+				{
+					active = Model.Accounts.First()== account? "active" :"";
+					<li class="nav-item">
+						<a class="nav-link @active" data-bs-toggle="tab" href="#@account.AccountNo">@account.AccountNo</a>
+					</li>
+				}
+				@if(Model.Accounts.Count()<2){
+					active = Model.Accounts.Count() == 0 ? "active": "";
+					<li class="nav-item">
+					<a class="nav-link @active" data-bs-toggle="tab" href="#create">Create new account</a>
+				</li>
+				}
+			</ul>
+
+			<!-- Tab panes -->
+			<div class="tab-content" id="tab-panes-account">
+				@foreach (var account in Model.Accounts)
+				{
+					active = Model.Accounts.First()== account? "active show" :"";
+					<div class="tab-pane container mt-4 fade @active" id="@account.AccountNo">
+						<section class="get-in-touch mb-3">
+							<div class="row mb-4">
+								<div class="col-4"></div>
+								<h6 class="col-4 text-center">AccountNo: @account.AccountNo</h6>
+								<div class="col-4 float-right form-check form-switch">
+									@if (account.Status == "lock"){
+										<input class="form-check-input disable-account" checked data-id="@account.AccountNo" type="checkbox" id="lockAccount-@account.AccountNo"><p>Disable Account</p>
+									}else{
+										<input class="form-check-input disable-account" data-id="@account.AccountNo" type="checkbox" id="lockAccount-@account.AccountNo"><p>Disable Account</p>
+									}
+								</div>
+							</div>
+						   <form class="contact-form row mb-4">
+							  <div class="form-field col-4">
+								 <input class="input-text js-input text-right account-balance" readonly value="@account.FormatAmount" style="" type="text" >
+								 <label class="label" for="name">Balance</label>
+							  </div>
+							  <div class="form-field col-4 ">
+								 <input class="input-text js-input text-right" readonly value="@account.OpenDate.ToShortDateString()" >
+								 <label class="label" for="email">OpenDate</label>
+							  </div>
+							  <div class="form-field col-4 ">
+								 <input class="input-text js-input text-right" readonly value="@account.Status" type="text">
+								 <label class="label" for="company">Status</label>
+							  </div>
+						   </form>
+						</section>
+						<div class="row">
+							@if (account.Cards.Count() != 0){
+								<h6 class="text-center mb-4">You have @account.Cards.Count() Cards</h6>
+								<div id="carouselCards_@account.AccountId" class="carousel carousel-dark slide" data-bs-ride="carousel">
+								  @*<div class="carousel-indicators">
+									  @for (var i = 0; i < account.Cards.Count(); i++)
+									  {
+										  if (i==1){
+											<button type="button" data-bs-target="#carouselCards_@account.AccountId" data-bs-slide-to="@i+1" class="active" aria-current="true" aria-label="Slide @i+1"></button>
+										  }else{
+											<button type="button" data-bs-target="#carouselCards_@account.AccountId" data-bs-slide-to="@i+1" aria-label="Slide @i+1"></button>
+										  }
+									  }
+								  </div>*@
+								  <div class="carousel-inner">
+									@foreach (var card in account.Cards)
+										{
+											active = account.Cards.First()== card? "active" :"";
+											<div class="carousel-item @active">
+												<div class="container card text-light cardSlider" id="cardSlider_@card.CardId">
+													<p class="card-name">@card.CardName.ToUpper()</p>
+													<p class="card-number">@card.cardFormat</p>
+													<p class="card-exp">@card.ExpirationCard</p>
+												</div>
+											</div>
+											
+									}
+									<div class="carousel-item">
+										<div style="position:relative;" class="container card text-light createNewCard" id="cardSlider">
+										</div>
+										<div style="position: absolute;top: 39%;left: 46%;color: white;">
+											<p><a asp-controller="Card" asp-action="CreateCard" asp-route-accountNo ="@account.AccountNo"><i style="font-size:50px" class="fa fa-plus"></i></a></p>
+										</div>
+									</div>
+									
+								  </div>
+								  <button class="carousel-control-prev" type="button" data-bs-target="#carouselCards_@account.AccountId" data-bs-slide="prev">
+									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Previous</span>
+								  </button>
+								  <button class="carousel-control-next" type="button" data-bs-target="#carouselCards_@account.AccountId" data-bs-slide="next">
+									<span class="carousel-control-next-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Next</span>
+								  </button>
+								</div>
+							}
+							else{
+								<h6 class="text-center mb-4">You dont have any card in this account</h6>
+								<span class="text-center">Do you want to <a asp-controller="Card" asp-action="CreateCard" asp-route-accountNo ="@account.AccountNo">Create One</a>?</span>
+							}
+
+						</div>
+					</div>
+				}
+
+				@if(Model.Accounts.Count()<2){
+					active = Model.Accounts.Count() == 0 ? "active show": "";
+					<div class="tab-pane @active fade container mb-3" id="create">
+						<section class="get-in-touch">
+							<h6 class="text-center mb-4 mt-4">Create new Account</h6>
+							<div>
+								<input id="create-account-customerId" class="form-control input-center" value="@Model.CustomerId" type="text" placeholder="CustomerId" hidden>
+								<div class="col-12 mt-3 d-flex">
+									<input id="create-account-accountNo" class="form-control input-center" type="text" placeholder="Account No" required readonly>
+									<button type="button" id="randomAccountNo" style="background-color: #0247FE;color: white;border-radius: 50%; width: 40px;margin-left: 5px;border: none;">
+										<i class="fa-solid fa-rotate-right"></i>
+									</button>
+								</div>
+								<div class="col-12 mt-3">
+									<input id="create-account-balance" class="form-control input-center" type="text" placeholder="Balance" required>
+								</div>                
+								<div class="col-12 mt-3">
+									<button id="createAccount"  class="btn btn-primary btn-block">Create</button>
+								</div>
+							</div>
+						</section>
+					</div>
+					}
+			</div>
+		</div>
+	</div>
+</div>
+
+    
+@section scripts{
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="~/js/customer-details.js"></script>
+}
+
+@section css{
+    <style>
+		@*Slider Card*@
+		.cardSlider{
+			background-image: url(/images/Card/cardAdmin.png);
+			background-size: 400px 250px;
+			width: 400px;
+			height: 250px;
+			border: none;
+			border-radius: 15px;
+			position: relative;
+		}
+
+		.createNewCard{
+			background-image: url(/images/Card/cardAdmin.png);
+			background-size: 400px 250px;
+			width: 400px;
+			height: 250px;
+			border: none;
+			border-radius: 15px;
+			position: relative;
+			filter:blur(5px);
+		}
+
+		.card-number{
+			text-align: center;
+			font-size: 30px;
+			letter-spacing: 2px;
+			position: absolute;
+			margin-top: 150px;
+		}
+		.card-name{
+			position: absolute;
+			margin-top: 30px;
+			letter-spacing: 2px;
+			font-size: 24px;
+		}
+		.card-exp{
+			position: absolute;
+			margin-top: 200px;
+			letter-spacing: 2px;
+		}
+
+
+        p {
+	        font-size: 14px;
+	        line-height: 21px;
+        }
+
+        .card-container {
+	        background-color: #231E39;
+	        border-radius: 5px;
+	        box-shadow: 0px 10px 20px -10px rgba(0,0,0,0.75);
+	        color: #B3B8CD;
+	        padding-top: 30px;
+	        position: relative;
+	        width: 350px;
+	        max-width: 100%;
+	        text-align: center;
+        }
+
+        .card-container .pro {
+	        color: #231E39;
+	        border-radius: 3px;
+	        font-size: 14px;
+	        font-weight: bold;
+	        padding: 3px 7px;
+	        position: absolute;
+	        top: 30px;
+	        left: 30px;
+        }
+
+        .card-container .round {
+	        border: 1px solid #03BFCB;
+	        border-radius: 50%;
+	        padding: 7px;
+        }
+
+        button.primary {
+	        background-color: #03BFCB;
+	        border: 1px solid #03BFCB;
+	        border-radius: 3px;
+	        color: #231E39;
+	        font-family: Montserrat, sans-serif;
+	        font-weight: 500;
+	        padding: 10px 25px;
+        }
+
+        button.primary.ghost {
+	        background-color: transparent;
+	        color: #02899C;
+        }
+
+        .skills {
+	        background-color: #1F1A36;
+	        text-align: left;
+	        padding: 15px;
+	        margin-top: 30px;
+        }
+
+        .skills ul {
+	        list-style-type: none;
+	        margin: 0;
+	        padding: 0;
+        }
+
+        .skills ul li {
+	        border: 1px solid #2D2747;
+	        border-radius: 2px;
+	        display: inline-block;
+	        font-size: 12px;
+	        margin: 0 7px 7px 0;
+	        padding: 7px;
+        }
+
+        footer {
+            background-color: #222;
+            color: #fff;
+            font-size: 14px;
+            bottom: 0;
+            position: fixed;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 999;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        footer i {
+            color: red;
+        }
+
+        footer a {
+            color: #3c97bf;
+            text-decoration: none;
+        }
+    </style>
+
+	<!--Css Accounts-->
+	<style>
+
+		.get-in-touch {
+		  max-width: 800px;
+		  position: relative;
+
+		}
+
+		.contact-form .form-field {
+		  position: relative;
+		}
+		.contact-form .input-text {
+		  display: block;
+		  width: 100%;
+		  height: 36px;
+		  border-width: 0 0 2px 0;
+		  border-color: #5543ca;
+		  font-size: 18px;
+		  line-height: 26px;
+		  font-weight: 400;
+		}
+		.contact-form .input-text:focus {
+		  outline: none;
+		}
+		.contact-form .label {
+		  position: absolute;
+		  left: 20px;
+		  bottom: 11px;
+		  font-size: 18px;
+		  line-height: 26px;
+		  font-weight: 400;
+		  color: #5543ca;
+		  cursor: text;
+		}
+	</style>
+}

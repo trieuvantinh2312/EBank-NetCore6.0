@@ -1,0 +1,55 @@
+﻿@using BankModel
+@model Transaction
+@{
+    ViewData["Title"] = "Transfer-success";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top:100px;margin-bottom:100px">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-center" >
+                <div class="transfer-success_box">
+                    <div class="icon_bank"><i class="bi bi-bank"></i></div>
+                    <div class="transfer_success d-flex justify-content-center align-items-center">
+                        <i class="bi bi-check-lg"></i>&nbsp;<span style="font-size: 28px; font-weight: bold; color: green;">Transfer Successfully</span>
+                    </div>
+                    <div class="text_s"><span style="font-weight:bold">TransactionId:&nbsp;</span>@Model.TransactionCode</div>
+                    <div class="text_s"><span style="font-weight:bold">Date:&nbsp;</span>@Model.FormatDate</div>
+                    <div class="text_s"><span style="font-weight:bold">From Account:&nbsp;</span>@Model.FromAccount</div>
+                    <div class="text_s"><span style="font-weight:bold">To Account:&nbsp;</span>@Model.ToAccount</div>
+                    <div class="text_s"><span style="font-weight:bold">Amount:&nbsp;</span>@Model.FormatAmount</div>
+                    <div class="text_s"><span style="font-weight:bold">Description:&nbsp;</span>@Model.Description</div>
+                    <div class="btn-transfer_success">
+                        <a asp-controller="Home" asp-area="Customer" asp-action="Index" class="button_back">Go to Home</a>
+                        <a onclick="Save_Transaction(@Model.TransactionId)" class="button_back">Save Transaction</a>
+                        <a asp-controller="Home" asp-area="Customer" asp-action="TransferMoney" class="button_transfer">Transfer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        function Save_Transaction(transactionId) {
+            Swal.fire({
+                title: "Please wait...",
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+            })
+            $.ajax({
+                type: "GET",
+                url: "/Save_Transaction",
+                data: { transactionId: transactionId },
+                success: (data) => {
+                    if (data.success) {
+                        Swal.fire('Success','Saved to your mail','success')
+                    }
+                }
+            })
+        }
+    </script>
+}

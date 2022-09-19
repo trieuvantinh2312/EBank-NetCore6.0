@@ -1,0 +1,135 @@
+﻿@using BankModel
+@model IEnumerable<BankModel.News>
+@{
+    ViewData["Title"] = "Blog";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+    Paging pager = new Paging();
+    int pageNo = 0;
+    if (ViewBag.page != null)
+    {
+        pager = ViewBag.page;
+        pageNo = pager.CurrentPage;
+    }
+}
+<!-- Start Blog Area -->
+<div class="blog-area ptb-100 bg-color-fbfbfb">
+    <div class="container">
+        <div class="section-title">
+            <span class="top-title">Our Blog</span>
+            <h2>Read Latest Article</h2>
+            <p>Connect your money to your friends & family from anywhere, anytime regardless any delay. Lorem ipsum Nullana integer sagittis, eleifend. met, aliquere.</p>
+        </div>
+
+        <div class="row" id="renderNews"></div>
+    </div>
+</div>
+<!-- End Blog Area -->
+<!-- Start Started Area -->
+@if(User.Identity.IsAuthenticated){
+    
+}else{
+<div class="started-area bg-color-ee6a3e">
+    <div class="container">
+        <div class="started-bg">
+            <div class="started-content">
+                <h3>Ready To Get Started?</h3>
+                <p>Explore BITR Payments, or create an account instantly and start accepting payments. You can also contact us to design a custom package for your new online business.</p>
+
+                <div class="started-btn">
+                    <a asp-controller="Account" asp-action="Login" asp-area="Customer" class="default-btn">
+                        Start Now
+                    </a>
+                    <a asp-controller="Home" asp-action="ContactUs" asp-area="Customer" class="default-btn active">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+@*
+            <img src="/~assets/images/started-shape-1.png" class="shape shape-1" alt="Image">
+            <img src="/~assets/images/started-shape-2.png" class="shape shape-2" alt="Image">
+            <img src="/~assets/images/started-shape-3.png" class="shape shape-3" alt="Image">*@
+        </div>
+    </div>
+</div>
+}
+
+<!-- End Started Area -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(()=>{
+            render(1);
+        })
+        let render = (pge) => {
+            $.ajax({
+                url: "/BlogRender",
+                data: {
+                    pg: pge
+                },
+                type: "GET",
+                success: (data) => {
+                    if(data.render.length > 0){
+                        let variable = '<div class="row">';
+                            for (var i of data.render) {
+                                variable += '<div class="col-lg-4 col-md-6">' +
+                                    '           <div class="single-blog-item wow fadeInUp delay-0-2s">' +
+                                    '               <a href="blog-details.html">' +
+                                    '                   <img src="' + i.imageMain + '" alt="Image">' +
+                                    '               </a>' +
+                                    '' +
+                                    '               <div class="blog-content">' +
+                                    '                   <ul>' +
+                                    '                       <li>' +
+                                    '                           <i class="flaticon-calendar"></i>' +
+                                    '                               ' + i.formatDate + '' +
+                                    '                       </li>' +
+                                    '                       <li>' +
+                                    '                           <i class="flaticon-user"></i>' +
+                                    '                               <a href="blog-details.html">By Admin</a>' +
+                                    '                       </li>' +
+                                    '                   </ul>' +
+                                    '                   <h3>' +
+                                    '                       <a href="NewsDetail?id=' + i.newId + '">' +
+                                    '                           ' + i.title + '' +
+                                    '                       </a>' +
+                                    '                   </h3>' +
+                                    '               </div>' +
+                                    '           </div>' +
+                                    '       </div>'
+                            }
+                            variable += '</div>'
+                            if (data.pager.totalPages > 0) {
+                                var variable2 = '<ul class="pagination justify-content-center">'
+                                if (data.pager.currentPage > 1) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<button class="page-numbers" onclick="getPage(1)"> <i class="bi bi-arrow-left-short"></i> </button>' +
+                                        '</li>'
+                                }
+                                for (var pge = data.pager.startPage; pge <= data.pager.endPage; pge++) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<button class="page-numbers  ' + (pge == data.pager.currentPage ? "bg-info" : "") + '" onclick="getPage(' + pge + ')">' + pge + '</button>' +
+                                        '</li>'
+                                }
+                                if (data.pager.currentPage < data.pager.totalPages) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<li class="pagination-area">' +
+                                        '<button class="page-numbers" onclick="getPage(' + data.pager.totalPages + ')"> <i class="bi bi-arrow-right-short"></i> </button>' +
+                                        '</li>'
+                                }
+                                variable2 += '</ul>'
+                            }
+
+                            $("#renderNews").html(variable + variable2);
+                    }else{
+                        $("#renderNews").html("");
+                    }
+                }
+            });
+        }
+        let getPage = (pge) => {
+            render(pge);
+        }
+    </script>
+}

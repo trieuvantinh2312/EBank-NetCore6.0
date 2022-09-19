@@ -1,0 +1,1161 @@
+﻿@using BankModel
+@model BankModel.ViewModel.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
+    Paging pager = new Paging();
+    int pageNo = 0;
+    if (ViewBag.page != null)
+    {
+        pager = ViewBag.page;
+        pageNo = pager.CurrentPage;
+    }
+    string custom = "";
+    var image = Model.Customer.Avatar == null ? "userdefault.png" : Model.Customer.Avatar;
+    var customerId = Model.Customer.CustomerId;
+}
+<h1>Profile</h1>
+<main class="page-content">
+    <div class="account-page-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="account-page-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="account-orders-tab" data-bs-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="true">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="account-address-tab" data-bs-toggle="tab" href="#cardInfo" role="tab" aria-controls="card-details" aria-selected="false">List Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="cheque-tab" data-bs-toggle="tab" href="#chequeInfo" role="tab" aria-controls="cheque-details" aria-selected="false">Request Cheques</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="account-details-tab" data-bs-toggle="tab" href="#customer-details" role="tab" aria-controls="customer-details" aria-selected="false">Customer Details</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div style="z-index:1" class="col-12">
+                    <div class="tab-content myaccount-tab-content" id="account-page-tab-content">
+                        <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                            <div class="myaccount-orders">
+                                <h4 class="small-title">MY TRANSACTION</h4>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label>Your Account: </label>
+                                        <select class="form-control-sm" asp-items="ViewBag.acc" id="accountProfile" onchange="accountChange()">
+                                        </select>
+                                        <button onclick="printPdf()" class="btn btn-success">Export to PDF</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <div>
+                                            <label>From: </label>
+                                            <input id="fromDate" type="date" />
+                                            <label>To: </label>
+                                            <input id="toDate" type="date" onchange="searchByDate()" />
+                                            <button onclick="refreshTrans()" class="fs-4"><i class="bi bi-arrow-clockwise"></i></button>
+                                        </div>
+                                        <div>
+                                            <span id="errors"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" id="transList">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>CODE</th>
+                                                <th>DATE</th>
+                                                <th>DESCRIPTION</th>
+                                                <th>AMOUNT</th>
+                                                <th>ACTION</th>
+                                            </tr>
+                                            @if (Model.Transactions.Count() > 0)
+                                            {
+                                                @foreach (var item in Model.Transactions)
+                                                {
+                                                    @if (item.FromAccount == Model.Accounts.FirstOrDefault().AccountNo)
+                                                    {
+                                                        custom = "text-danger";
+                                                    }
+                                                    else
+                                                    {
+                                                        custom = "text-success";
+                                                    }
+                                                    <tr class="@custom">
+                                                        <td>@item.TransactionCode</td>
+                                                        <td>@item.FormatDate</td>
+                                                        <td>@item.Description</td>
+                                                        <td>
+                                                            @if (item.FromAccount == Model.Accounts.FirstOrDefault().AccountNo)
+                                                            {
+                                                                custom = "-";
+                                                            }
+                                                            else
+                                                            {
+                                                                custom = "+";
+                                                            }
+                                                            @custom @item.FormatAmount
+                                                        </td>
+                                                        <td>
+                                                            <a asp-action="DetailTransaction" asp-area="Customer" asp-route-id="@item.TransactionId" asp-controller="Account" class="btn btn-info"><span><i class="bi bi-eye"></i></span></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="5">Don't Have Any transaction before</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                    @if (pager.TotalPages > 0)
+                                    {
+                                        <ul class="pagination justify-content-center">
+                                            @if (pager.CurrentPage > 1)
+                                            {
+                                                <li class="pagination-area">
+                                                    <button class="page-numbers" onclick="getPage(1)"><i class="bi bi-arrow-left-short"></i></button>
+                                                </li>
+                                            }
+                                            @for (int pge = pager.StartPage; pge <= pager.EndPage; pge++)
+                                            {
+                                                <li class="pagination-area">
+                                                    <button class="page-numbers @(pge == pager.CurrentPage?"bg-info":"")" onclick="getPage(@pge)">@pge</button>
+                                                </li>
+                                            }
+                                            @if (pager.CurrentPage < pager.TotalPages)
+                                            {
+                                                <li class="pagination-area">
+                                                    <button class="page-numbers" onclick="getPage(@pager.TotalPages)"><i class="bi bi-arrow-right-short"></i></button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" role="tabpanel" id="cardInfo" aria-labelledby="card-details-tab">
+                            <h5 class="text-center"><b>List Accounts</b></h5>
+                            <div>
+                                <label>Your Account: </label>
+                                <select class="form-control-sm" asp-items="ViewBag.acc" id="cardAccount" onchange="cardRender()"></select>
+                            </div>
+                            <div id="cardRender">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="account-details-firstname">Open Date: </label>
+                                        <b>@Model.Accounts.FirstOrDefault().FormatDate</b>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="account-details-firstname">Status: </label>
+                                        <b id="statusAccount">@Model.Accounts.FirstOrDefault().Status</b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="account-details-firstname">Balance: </label>
+                                        <b id="@Model.Accounts.FirstOrDefault().AccountId">********</b> <button onclick="toggleBalance(@Model.Accounts.FirstOrDefault().AccountId,@Model.Accounts.FirstOrDefault().Balance)"><i class="bi bi-eye"></i></button>
+                                        <span id="statusErros"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#changePin">Change Pin Code</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (Model.Card.Count > 0)
+                            {
+                                <div class="cardInfo" id="cardList">
+                                    <div class="row">
+                                        <div class="container">
+                                            <div class="slider">
+                                                <div class="owl-carousel">
+                                                    @foreach (var item in Model.Card)
+                                                    {
+                                                        <div class="slider-card mb-5 mt-5">
+                                                            <div class="card">
+                                                                <div class="flip">
+                                                                    <div class="front">
+                                                                        <div class="strip-bottom"></div>
+                                                                        <div class="strip-top"></div>
+                                                                        <svg class="logo" width="40" height="40" viewbox="0 0 17.5 16.2">
+                                                                            <path d="M3.2 0l5.4 5.6L14.3 0l3.2 3v9L13 16.2V7.8l-4.4 4.1L4.5 8v8.2L0 12V3l3.2-3z" fill="white"></path>
+                                                                        </svg>
+                                                                        <div class="investor">@item.CardName</div>
+                                                                        <div class="chip">
+                                                                            <div class="chip-line"></div>
+                                                                            <div class="chip-line"></div>
+                                                                            <div class="chip-line"></div>
+                                                                            <div class="chip-line"></div>
+                                                                            <div class="chip-main"></div>
+                                                                        </div>
+                                                                        <svg class="wave" viewBox="0 3.71 26.959 38.787" width="26.959" height="38.787" fill="white">
+                                                                            <path d="M19.709 3.719c.266.043.5.187.656.406 4.125 5.207 6.594 11.781 6.594 18.938 0 7.156-2.469 13.73-6.594 18.937-.195.336-.57.531-.957.492a.9946.9946 0 0 1-.851-.66c-.129-.367-.035-.777.246-1.051 3.855-4.867 6.156-11.023 6.156-17.718 0-6.696-2.301-12.852-6.156-17.719-.262-.317-.301-.762-.102-1.121.204-.36.602-.559 1.008-.504z"></path>
+                                                                            <path d="M13.74 7.563c.231.039.442.164.594.343 3.508 4.059 5.625 9.371 5.625 15.157 0 5.785-2.113 11.097-5.625 15.156-.363.422-1 .472-1.422.109-.422-.363-.472-1-.109-1.422 3.211-3.711 5.156-8.551 5.156-13.843 0-5.293-1.949-10.133-5.156-13.844-.27-.309-.324-.75-.141-1.114.188-.367.578-.582.985-.542h.093z"></path>
+                                                                            <path d="M7.584 11.438c.227.031.438.144.594.312 2.953 2.863 4.781 6.875 4.781 11.313 0 4.433-1.828 8.449-4.781 11.312-.398.387-1.035.383-1.422-.016-.387-.398-.383-1.035.016-1.421 2.582-2.504 4.187-5.993 4.187-9.875 0-3.883-1.605-7.372-4.187-9.875-.321-.282-.426-.739-.266-1.133.164-.395.559-.641.984-.617h.094zM1.178 15.531c.121.02.238.063.344.125 2.633 1.414 4.437 4.215 4.437 7.407 0 3.195-1.797 5.996-4.437 7.406-.492.258-1.102.07-1.36-.422-.257-.492-.07-1.102.422-1.359 2.012-1.075 3.375-3.176 3.375-5.625 0-2.446-1.371-4.551-3.375-5.625-.441-.204-.676-.692-.551-1.165.122-.468.567-.785 1.051-.742h.094z"></path>
+                                                                        </svg>
+                                                                        <div class="card-number">
+                                                                            <div class="section">@item.cardFormat</div>
+                                                                        </div>
+                                                                        <div class="end"><span class="end-text">exp. end:</span><span class="end-date">@item.ExpirationCard</span></div>
+                                                                        <div class="card-holder">@Model.Customer.CustomerName</div>
+                                                                        <div class="master">
+                                                                            <div class="circle master-red"></div>
+                                                                            <div class="circle master-yellow"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="back">
+                                                                        <div class="strip-black"></div>
+                                                                        <div class="ccv">
+                                                                            <label>ccv</label>
+                                                                            <div>@item.Cvv</div>
+                                                                        </div>
+                                                                        <div class="terms">
+                                                                            <p>This card is property of E Bank, Wonderland. Misuse is criminal offence. If found, please return to E Bank or to the nearest bank with MasterCard logo.</p>
+                                                                            <p>Use of this card is subject to the credit card agreement.</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <h5 class="text-center mb-5">This account don't have card yet go to the bank to open card</h5>
+                            }
+                        </div>
+
+                        <div class="tab-pane fade" role="tabpanel" id="chequeInfo" aria-labelledby="card-details-tab">
+                            <h5 class="text-center"><b>List Cheque</b></h5>
+                            <div>
+                                <label>Your Account: </label>
+                                <select class="form-control-sm" asp-items="ViewBag.acc" id="chequeAccount" onchange="chequeChangeAccount()"></select>
+                            </div>
+                            <div id="chequeRender">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="account-details-firstname">Open Date: </label>
+                                        <b>@Model.Accounts.FirstOrDefault().FormatDate</b>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="account-details-firstname">Status: </label>
+                                        <b id="statusCheque">@Model.Accounts.FirstOrDefault().Status</b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="account-details-firstname">Balance: </label>
+                                        <b id="Cheque_@Model.Accounts.FirstOrDefault().AccountId">********</b> <button onclick="toggleChequeBalance(@Model.Accounts.FirstOrDefault().AccountId,@Model.Accounts.FirstOrDefault().Balance)"><i class="bi bi-eye"></i></button>
+                                        <span id="statusChequeErros"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cheque">
+                                <div class="chequeInfo">
+                                    <p class="name" id="name">@Model.Customer.CustomerName</p>
+                                    <p class="usd" id="amount"></p>
+                                    <p class="date" id="date"></p>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" onkeyup="chequeChange()">
+                                <div class="row">
+                                    <div class="col-2"></div>
+                                    <div class="col-4" style="margin-top: -6%;z-index: 1;margin-left: 12%;">
+                                        <input id="idValue" value="@Model.Customer.CustomerId" readonly placeholder="Name" hidden />
+                                        <label style="position: absolute;margin: 16px 0px 0px -60px;">USD: </label>
+                                        <input id="amountValue" type="number" class="form-control" placeholder="Amount" />
+                                        <span class="text-danger" id="chequeErrors"></span>
+                                        <input id="dateValue" placeholder="Date" hidden readonly value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    </div>
+                                    <div class="col-4" style="z-index:1;">
+                                        <button style="margin-top:-31%;" onclick="sendRequestCheque()" class="btn btn-primary">Request Cheque</button>
+                                    </div>
+                                    <div class="col-2"></div>
+                                </div>
+                            </div>
+                            <div class="table-responsive" id="chequeTable">
+                                <table class="table">
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Amount</td>
+                                        <td>Cheque Id</td>
+                                        <td>Cheque Id</td>
+                                        <td>Action</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="customer-details" role="tabpanel" aria-labelledby="customer-details-tab">
+                            <div class="myaccount-details">
+                                <div class="row mb-4">
+                                    <div class="col-5">
+                                    </div>
+                                    <div class="col-2">
+                                        <img style="border-radius:50%;" width="200" height="200" id="imgShow" src="~/images/@image" />
+                                    </div>
+                                    <div id="msg"></div>
+                                    <div class="col-5">
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-12 mb-5">
+                                        <button class="btn btn-success" style="margin-left:38%" onclick="chooseImage()">Change Avatar</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeAccountPassword">Change Password</button>
+                                    </div>
+                                    <input type="file" onchange="imageChanged(this)" accept="image/*" id="changeImage" hidden />
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Full Name : </label>
+                                        <b>@Model.Customer.CustomerName</b>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Date Of Birth: </label>
+                                        <b>@Model.Customer.DateFormat</b>
+                                    </div>
+                                    <div class="col-3">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Address: </label>
+                                        <b>@Model.Customer.Address</b>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Email: </label>
+                                        <b>@Model.Customer.Email</b>
+                                    </div>
+                                    <div class="col-3">
+                                    </div>
+                                </div>
+                                <div class="row mb-5">
+                                    <div class="col-3">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Phone: </label>
+                                        <b>@Model.Customer.Phone</b>
+                                    </div>
+                                    <div class="col-3">
+                                    </div><div class="col-3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Kenne's Account Page Area End Here -->
+</main>
+
+<!-- Button trigger modal -->
+<!-- Modal -->
+<div class="modal fade" id="changePin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change PinCode</h5>
+                <button type="button" style="margin-left: 80%; margin-top: -13%;" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label class="fw-bold">Current Pincode</label>
+                    <input class="form-control" placeholder="Enter current pincode..." id="currentPinCode" type="password" />
+                </div>
+                <div>
+                    <label class="fw-bold">New Pincode</label>
+                    <input class="form-control" placeholder="Enter new password..." id="newPinCode" type="password" />
+                </div>
+                <span class="text-danger" id="pinError"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeModal" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="changePinCode()" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Change Password-->
+<div class="modal fade" id="changeAccountPassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change Password</h5>
+                <button type="button" style="margin-left: 76%;margin-top: -13%;" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label class="fw-bold">Current Password</label>
+                    <input class="form-control" placeholder="Enter current password..." id="currentPassword" type="password" />
+                    <input value="@customerId" id="customerId" hidden />
+                </div>
+                <div>
+                    <label class="fw-bold">New Password</label>
+                    <input class="form-control" onchange="checkRegex()" placeholder="Enter new password..." id="newPassword" type="password" />
+                </div>
+                <div>
+                    <label class="fw-bold">Confirm Password</label>
+                    <input class="form-control" placeholder="Enter confirm password..." id="confirmPassword" type="password" />
+                </div>
+                <span class="text-danger" id="passwordError"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="passCloseModal" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="changePassword()" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(() => {
+            var account = $("#chequeAccount").val();
+            var date = $("#dateValue").val();
+            $("#date").text(date);
+            ChequeRender(account, 1);
+        })
+        let accountChange = (pge) => {
+            var account = $("#accountProfile").val();
+            $.ajax({
+                url: "/TransactionRender",
+                data: {
+                    account: account,
+                    pg: pge
+                },
+                type: "GET",
+                success: (data) => {
+                    var comboBox = "";
+                    var custom = "";
+                    comboBox += `<div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>CODE</th>
+                                                        <th>DATE</th>
+                                                        <th>DESCRIPTION</th>
+                                                        <th>AMOUNT</th>
+                                                        <th>ACTION</th>
+                                                    </tr>`
+                    if (data.trans.length != 0) {
+                        for (var i of data.trans) {
+                            if (i.fromAccount == account) {
+                                custom = "text-danger";
+                            }
+                            else {
+                                custom = "text-success";
+                            }
+                            comboBox +=
+                                `<tr class="${custom}">
+                                            <td>${i.transactionCode}</td>
+                                            <td>${i.formatDate}</td>
+                                            <td>${i.description}</td>
+                                            <td>`
+                            if (i.fromAccount == account) {
+                                custom = "-";
+                            }
+                            else {
+                                custom = "+";
+                            }
+                            comboBox += `${custom} ${i.formatAmount}
+                                            </td>
+                                            <td>
+                                                <a href="/DetailTransaction?id=${i.transactionId}" class="btn btn-info"><span><i class="bi bi-eye"></i></span></a>
+                                            </td>
+                                                </tr>`
+                        }
+                        comboBox += `</tbody>
+                                        </table>
+                                    </div>`
+                        if (data.pager.totalPages > 0) {
+                            var variable2 = '<ul class="pagination justify-content-center">'
+                            if (data.pager.currentPage > 1) {
+                                variable2 += '<li class="pagination-area">' +
+                                    '<button class="page-numbers" onclick="getPage(1)"> <i class="bi bi-arrow-left-short"></i> </button>' +
+                                    '</li>'
+                            }
+                            for (var pge = data.pager.startPage; pge <= data.pager.endPage; pge++) {
+                                variable2 += '<li class="pagination-area">' +
+                                    '<button class="page-numbers ' + (pge == data.pager.currentPage ? "bg-info" : "") + '" onclick="getPage(' + pge + ')">' + pge + '</button>' +
+                                    '</li>'
+                            }
+                            if (data.pager.currentPage < data.pager.totalPages) {
+                                variable2 += '<li class="pagination-area">' +
+                                    '<li class="pagination-area">' +
+                                    '<button class="page-numbers" onclick="getPage(' + data.pager.totalPages + ')"> <i class="bi bi-arrow-right-short"></i> </button>' +
+                                    '</li>'
+                            }
+                            variable2 += '</ul>'
+                        }
+                    } else {
+                        comboBox += `<tr><td colspan="5">Don't Have Any transaction before</td></tr>`
+                        variable2 = "";
+                    }
+                    $("#transList").html(comboBox + variable2);
+                }
+            });
+        }
+
+        let getPage = (pge) => {
+            accountChange(pge);
+        }
+
+        let chooseImage = () => {
+            $("#changeImage").trigger("click");
+        }
+
+        let imageChanged = (event) => {
+            var output = $("#imgShow");
+            var file = event.files;
+            output.src = URL.createObjectURL(file[0]);
+            output.onload = () => {
+                URL.revokeObjectURL(output.src)
+            }
+            $("#imgShow").attr("src", output.src)
+            var image = $("#changeImage").get(0).files[0];
+            var formData = new FormData();
+            formData.append("file", image);
+            $.ajax({
+                url: "/UpdateAvatar",
+                data: formData,
+                type: "POST",
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    if (data.status == true) {
+                        $("#msg").html("<span style='color:green;'>" + data.msg + "</span>");
+                        window.location.reload();
+                    } else {
+                        $("#msg").html("<span style='color:red;'>" + data.msg + "</span>")
+                    }
+                }
+
+            });
+        }
+
+        let accountRender = (acc) => {
+            var account = `<div class="row" id="cardRender">
+                                        <div class="col-6">
+                                            <label for="account-details-firstname">Open Date: </label>
+                                            <b>${acc.formatDate}</b>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="account-details-firstname">Status: </label>
+                                                <b id="statusAccount">${acc.status}</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label for="account-details-firstname">Balance: </label>
+                                                <b id="${acc.accountId}">********</b> <button onclick="toggleBalance(${acc.accountId},${acc.balance})"><i class="bi bi-eye"></i></button>
+                                                <span id="statusErros"></span>
+                                            </div>
+                                    </div>`
+            $("#cardRender").html(account);
+        }
+
+        let cardRender = () => {
+            var acc = $("#cardAccount").val();
+            $.ajax({
+                url: "/CardRender",
+                data: {
+                    account: acc
+                },
+                type: "GET",
+                success: (data) => {
+                    if (data.card.length != 0) {
+                        var cardList = `<div class="cardInfo" id="cardList">
+                                                    <div class="row">
+                                                        <div class="container">
+                                                            <div class="slider">
+                                                                <div class="owl-carousel">`
+                        for (var item of data.card) {
+                            cardList += `<div class="slider-card">
+                                                    <div class="card">
+                                                        <div class="flip">
+                                                            <div class="front">
+                                                                <div class="strip-bottom"></div>
+                                                                <div class="strip-top"></div>
+                                                                <svg class="logo" width="40" height="40" viewbox="0 0 17.5 16.2">
+                                                                    <path d="M3.2 0l5.4 5.6L14.3 0l3.2 3v9L13 16.2V7.8l-4.4 4.1L4.5 8v8.2L0 12V3l3.2-3z" fill="white"></path>
+                                                                </svg>
+                                                                <div class="investor">Investor</div>
+                                                                <div class="chip">
+                                                                    <div class="chip-line"></div>
+                                                                    <div class="chip-line"></div>
+                                                                    <div class="chip-line"></div>
+                                                                    <div class="chip-line"></div>
+                                                                    <div class="chip-main"></div>
+                                                                </div>
+                                                                <svg class="wave" viewBox="0 3.71 26.959 38.787" width="26.959" height="38.787" fill="white">
+                                                                    <path d="M19.709 3.719c.266.043.5.187.656.406 4.125 5.207 6.594 11.781 6.594 18.938 0 7.156-2.469 13.73-6.594 18.937-.195.336-.57.531-.957.492a.9946.9946 0 0 1-.851-.66c-.129-.367-.035-.777.246-1.051 3.855-4.867 6.156-11.023 6.156-17.718 0-6.696-2.301-12.852-6.156-17.719-.262-.317-.301-.762-.102-1.121.204-.36.602-.559 1.008-.504z"></path>
+                                                                    <path d="M13.74 7.563c.231.039.442.164.594.343 3.508 4.059 5.625 9.371 5.625 15.157 0 5.785-2.113 11.097-5.625 15.156-.363.422-1 .472-1.422.109-.422-.363-.472-1-.109-1.422 3.211-3.711 5.156-8.551 5.156-13.843 0-5.293-1.949-10.133-5.156-13.844-.27-.309-.324-.75-.141-1.114.188-.367.578-.582.985-.542h.093z"></path>
+                                                                    <path d="M7.584 11.438c.227.031.438.144.594.312 2.953 2.863 4.781 6.875 4.781 11.313 0 4.433-1.828 8.449-4.781 11.312-.398.387-1.035.383-1.422-.016-.387-.398-.383-1.035.016-1.421 2.582-2.504 4.187-5.993 4.187-9.875 0-3.883-1.605-7.372-4.187-9.875-.321-.282-.426-.739-.266-1.133.164-.395.559-.641.984-.617h.094zM1.178 15.531c.121.02.238.063.344.125 2.633 1.414 4.437 4.215 4.437 7.407 0 3.195-1.797 5.996-4.437 7.406-.492.258-1.102.07-1.36-.422-.257-.492-.07-1.102.422-1.359 2.012-1.075 3.375-3.176 3.375-5.625 0-2.446-1.371-4.551-3.375-5.625-.441-.204-.676-.692-.551-1.165.122-.468.567-.785 1.051-.742h.094z"></path>
+                                                                </svg>
+                                                                <div class="card-number">
+                                                                    <div class="section">${item.cardFormat}</div>
+                                                                </div>
+                                                                <div class="end"><span class="end-text">exp. end:</span><span class="end-date">${item.expiredDateFormat}</span></div>
+                                                                <div class="card-holder">mr Filip Vitas</div>
+                                                                <div class="master">
+                                                                    <div class="circle master-red"></div>
+                                                                    <div class="circle master-yellow"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="back">
+                                                                <div class="strip-black"></div>
+                                                                <div class="ccv">
+                                                                    <label>ccv</label>
+                                                                    <div>${item.cvv}</div>
+                                                                </div>
+                                                                <div class="terms">
+                                                                    <p>This card is property of Monzo Bank, Wonderland. Misuse is criminal offence. If found, please return to Monzo Bank or to the nearest bank with MasterCard logo.</p>
+                                                                    <p>Use of this card is subject to the credit card agreement.</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>`
+                        }
+                        cardList += `</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`
+                        $("#cardList").html(cardList);
+                    } else {
+                        $("#cardList").html("<h5 class='text-center mb-5'>This account don't have card yet go to the bank to open card</h5>")
+                    }
+                    accountRender(data.account);
+                    $(".owl-carousel").owlCarousel({
+                        margin: 10,
+                        nav: true,
+                        autoplayHoverPause: true,
+                        center: true,
+                        navText: [
+                            "<i class='fa fa-angle-left'></i>",
+                            "<i class='fa fa-angle-right'></i>"
+                        ],
+                        responsive: {
+                            0: {
+                                items: 1
+                            },
+                            600: {
+                                items: 1
+                            },
+                            1000: {
+                                items: 3
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        let chequeRender = (acc) => {
+            var account = `<div id="chequeRender">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label for="account-details-firstname">Open Date: </label>
+                                                <b>${acc.formatDate}</b>
+                                            </div>
+                                            <div class="col-6">
+                                                <label for="account-details-firstname">Status: </label>
+                                                <b id="statusCheque">${acc.status}</b>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <label for="account-details-firstname">Balance: </label>
+                                                <b id="Cheque_${acc.accountId}">********</b> <button onclick="toggleChequeBalance(${acc.accountId},${acc.balance})"><i class="bi bi-eye"></i></button>
+                                                <span id="statusChequeErros"></span>
+                                            </div>
+                                        </div>
+                                    </div>`
+            $("#chequeRender").html(account);
+        }
+
+        let chequeChangeAccountNo = (acc) => {
+            $.ajax({
+                url: "/ChequeAccountRender",
+                data: {
+                    accountNo: acc
+                },
+                type: "GET",
+                success: (data) => {
+                    chequeRender(data)
+                }
+            })
+        }
+
+        let toggleBalance = (id, balance) => {
+            var status = $("#statusAccount").text();
+            let formatBalance = balance.toLocaleString('en-US', {
+                valute: 'USD',
+            });
+            if (status == "normal") {
+                if ($("#" + id).text() == "********") {
+                    $("#" + id).text("$" + formatBalance);
+                } else {
+                    $("#" + id).text("********");
+                }
+            } else {
+                $("#statusErros").html("<span class='text-danger'>Your Account has locked can't view balance</span>")
+                const myTimeout = setTimeout(myGreeting, 3000);
+                function myGreeting() {
+                    document.getElementById("statusErros").innerHTML = ""
+                }
+            }
+        }
+
+        let toggleChequeBalance = (id, balance) => {
+            var status = $("#statusCheque").text();
+            let formatBalance = balance.toLocaleString('en-US', {
+                valute: 'USD',
+            });
+            if (status == "normal") {
+                if ($("#Cheque_" + id).text() == "********") {
+                    $("#Cheque_" + id).text("$" + formatBalance);
+                } else {
+                    $("#Cheque_" + id).text("********");
+                }
+            } else {
+                $("#statusChequeErros").html("<span class='text-danger'>Your Account has locked can't view balance</span>")
+                const myTimeout = setTimeout(myGreeting, 3000);
+                function myGreeting() {
+                    document.getElementById("statusChequeErros").innerHTML = ""
+                }
+            }
+        }
+
+        let searchByDate = (pge) => {
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+            var accountNo = $("#accountProfile").val();
+            if (fromDate != "") {
+                $("#errors").html("");
+                $.ajax({
+                    url: "/SearchByDate",
+                    data: {
+                        fromDate: fromDate,
+                        toDate: toDate,
+                        accountNo: accountNo,
+                        pg: pge
+                    },
+                    type: "GET",
+                    success: (data) => {
+                        var comboBox = "";
+                        var custom = "";
+                        comboBox += `<div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>CODE</th>
+                                                            <th>DATE</th>
+                                                            <th>DESCRIPTION</th>
+                                                            <th>AMOUNT</th>
+                                                            <th>ACTION</th>
+                                                        </tr>`
+                        if (data.trans.length != 0) {
+                            for (var i of data.trans) {
+                                if (i.fromAccount == accountNo) {
+                                    custom = "text-danger";
+                                }
+                                else {
+                                    custom = "text-success";
+                                }
+                                comboBox +=
+                                    `<tr class="${custom}">
+                                                <td>${i.transactionCode}</td>
+                                                <td>${i.formatDate}</td>
+                                                <td>${i.description}</td>
+                                                <td>`
+                                if (i.fromAccount == accountNo) {
+                                    custom = "-";
+                                }
+                                else {
+                                    custom = "+";
+                                }
+                                comboBox += `${custom} ${i.formatAmount}
+                                                </td>
+                                                <td>
+                                                            <a href="/DetailTransaction?id=${i.transactionId}" class="btn btn-info"><span><i class="bi bi-eye"></i></span></a>
+                                                </td>
+                                        </tr>`
+                            }
+                            comboBox += `</tbody>
+                                            </table>
+                                        </div>`
+                            if (data.pager.totalPages > 0) {
+                                var variable2 = '<ul class="pagination justify-content-center">'
+                                if (data.pager.currentPage > 1) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<button class="page-numbers" onclick="getSearchPage(1)"> <i class="bi bi-arrow-left-short"></i> </button>' +
+                                        '</li>'
+                                }
+                                for (var pge = data.pager.startPage; pge <= data.pager.endPage; pge++) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<button class="page-numbers ' + (pge == data.pager.currentPage ? "bg-info" : "") + '" onclick="getSearchPage(' + pge + ')">' + pge + '</button>' +
+                                        '</li>'
+                                }
+                                if (data.pager.currentPage < data.pager.totalPages) {
+                                    variable2 += '<li class="pagination-area">' +
+                                        '<li class="pagination-area">' +
+                                        '<button class="page-numbers" onclick="getSearchPage(' + data.pager.totalPages + ')"> <i class="bi bi-arrow-right-short"></i> </button>' +
+                                        '</li>'
+                                }
+                                variable2 += '</ul>'
+                            }
+                        } else {
+                            comboBox += `<tr><td colspan="5">Don't Have Any transaction before</td></tr>`
+                            variable2 = "";
+                        }
+                        $("#transList").html(comboBox + variable2);
+                    }
+                });
+            } else {
+                $("#toDate").val("")
+                $("#errors").html("<span class='text-danger' id='errors'>Please choose from date</span>")
+            }
+
+        }
+
+        let getSearchPage = (pge) => {
+            searchByDate(pge)
+        }
+
+        let refreshTrans = () => {
+            $("#errors").html("");
+            $("#toDate").val("")
+            $("#fromDate").val("")
+            accountChange(1)
+        }
+
+        let printPdf = () => {
+            var accountNo = $("#accountProfile").val();
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+               Swal.fire({
+                    title: "Please wait...",
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    },
+                })
+            $.ajax({
+                url: "/PrintPdf",
+                data: {
+                    accountNo: accountNo,
+                    fromDate: fromDate,
+                    toDate: toDate
+                },
+                type: "GET",
+                success: (data) => {
+                    if (data.status == true) {
+                        Swal.fire("Success", data.msg, "success")
+                        base64toPDF(data.data);
+                    } else {
+                        Swal.fire("Failed", data.msg, "error")
+                    }
+                }
+            })
+        }
+
+        let base64toPDF = (data) => {
+            var bufferArray = base64ToArrayBuffer(data);
+            var blobStore = new Blob([bufferArray], { type: "application/pdf" });
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blobStore);
+                return;
+            }
+            var data = window.URL.createObjectURL(blobStore);
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = data;
+            link.download = "Transaction.pdf";
+            link.click();
+            window.URL.revokeObjectURL(data);
+            link.remove();
+        }
+
+        let base64ToArrayBuffer = (data) => {
+            var bString = window.atob(data);
+            var bLength = bString.length;
+            var bytes = new Uint8Array(bLength);
+            for (var i = 0; i < bLength; i++) {
+                var ascii = bString.charCodeAt(i);
+                bytes[i] = ascii;
+            }
+            return bytes;
+        }
+
+        let ChequeRender = (account, pge) => {
+            $.ajax({
+                url: "/RenderCheque",
+                data: {
+                    account: account,
+                    pg: pge
+                },
+                type: "GET",
+                success: (data) => {
+                    var count = 0
+                    var link = "";
+                    var chequeClass = ""
+                    var cheque = ` <div class="table-responsive" id="chequeTable">
+                                                <table class="table table-bordered text-center">
+                                                    <tr>
+                                                        <td>#</td>
+                                                        <td>Amount</td>
+                                                        <td>Date Created</td>
+                                                        <td>Status</td>
+                                                        <td>Action</td>
+                                                    </tr>`
+                    for (var i of data.cheque) {
+                        count += 1
+                        if (i.status == "success") {
+                            chequeClass = "text-success"
+                            link = `<button class="btn btn-danger" onclick="deleteCheque(${i.id})"><i class="bi bi-trash"></i></button>`
+                        } else if (i.status == "waiting") {
+                            chequeClass = "text-warning"
+                            link = `<button class="btn btn-warning" onclick="cancelCheque(${i.id},${data.pager.currentPage})"><i class="bi bi-x-lg"></i></button>`
+                        } else {
+                            chequeClass = "text-danger"
+                            link = `<button class="btn btn-danger" onclick="deleteCheque(${i.id})"><i class="bi bi-trash"></i></button>`
+                        }
+                        cheque += `<tr class="${chequeClass}">
+                                                <td>${count}</td>
+                                                <td>${i.formatAmount}</td>
+                                                <td>${i.formatDate}</td>
+                                                <td>${i.status}</td>
+                                                <td>${link}</td>
+                                            </tr>`
+                    }
+                    cheque += `</table>`
+                    if (data.pager.totalPages > 0) {
+                        cheque += `<ul class="pagination justify-content-center">`
+                        if (data.pager.currentPage > 1) {
+                            cheque += `<li class="pagination-area">
+                                                    <button class="page-numbers" onclick="getChequePage(1)"><i class="bi bi-arrow-left-short"></i></button>
+                                                </li>`
+                        }
+                        for (var pge = data.pager.startPage; pge <= data.pager.endPage; pge++) {
+                            cheque += `<li class="pagination-area">
+                                                    <button value="${pge}" id="getPageNumber" class="page-numbers ${(pge == data.pager.currentPage ? "bg-info" : "")}" onclick="getChequePage(${pge})">${pge}</button>
+                                                </li>`
+                        }
+                        if (data.pager.currentPage < data.pager.totalPages) {
+                            cheque += `<li class="pagination-area">
+                                                    <button class="page-numbers" onclick="getChequePage(${data.pager.totalPages})"><i class="bi bi-arrow-right-short"></i></button>
+                                                </li>`
+                        }
+                        cheque += `</ul>`
+                    }
+                    cheque += `</div>`
+                    $("#chequeTable").html(cheque);
+                }
+            })
+        }
+
+        let getChequePage = (pge) => {
+            var account = $("#chequeAccount").val();
+            ChequeRender(account, pge)
+        }
+
+        let chequeChangeAccount = () => {
+            var accountNo = $("#chequeAccount").val();
+            chequeChangeAccountNo(accountNo)
+            ChequeRender(accountNo, 1)
+        }
+
+        let deleteCheque = (id) => {
+            var account = $("#chequeAccount").val();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/DeleteCheque",
+                        data: {
+                            id: id
+                        },
+                        type: "GET",
+                        success: (data) => {
+                            if (data.status == true) {
+                                Swal.fire('Success!', data.msg, 'success')
+                                ChequeRender(account, 1)
+                            } else {
+                                Swal.fire('Failed!', data.msg, 'fail')
+                            }
+                        }
+                    })
+                }
+            })
+
+        }
+
+        let cancelCheque = (id, pge) => {
+            var accountNo = $("#chequeAccount").val();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/CancelCheque",
+                        data: {
+                            id: id
+                        },
+                        type: "GET",
+                        success: (data) => {
+                            if (data.status == true) {
+                                Swal.fire('Success!', data.msg, 'success')
+                                ChequeRender(accountNo, pge)
+                                chequeChangeAccountNo(accountNo)
+                            } else {
+                                Swal.fire('Failed!', data.msg, 'fail')
+                            }
+                        }
+                    })
+                }
+            })
+        }
+
+        let chequeChange = () => {
+            var amount = $("#amountValue").val();
+            let dollarUS = Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                useGrouping: true,
+                maximumSignificantDigits: 3,
+            });
+            $("#amount").text(dollarUS.format(amount));
+            $("#chequeErrors").text("")
+        }
+
+        let sendRequestCheque = () => {
+            var amount = $("#amountValue").val();
+            var date = $("#dateValue").val();
+            var id = $("#idValue").val();
+            var accountNo = $("#chequeAccount").val();
+            if (amount >= 100 && amount <= 1000) {
+                $.ajax({
+                    url: "/ReciveRequestCheque",
+                    type: "POST",
+                    data: {
+                        cheque: {
+                            Amount: amount,
+                            CustomerId: id,
+                            CreatedDate: date
+                        },
+                        accountNo: accountNo
+                    },
+                    success: (data) => {
+                        if (data.status == true) {
+                            Swal.fire('Success!', data.msg, 'success')
+                            ChequeRender(accountNo, 1)
+                            chequeChangeAccountNo(accountNo)
+                        } else {
+                            Swal.fire('Failed!', data.msg, 'error')
+                        }
+                    }
+                })
+            } else {
+                $("#chequeErrors").text("Amount must be >= $100 && <= $1000")
+            }
+        }
+
+        let changePinCode = () => {
+            var currentPin = $("#currentPinCode").val()
+            var newPin = $("#newPinCode").val()
+            var accountNo = $("#cardAccount").val()
+            $.ajax({
+                url: "/ChangePinCode",
+                data: {
+                    currentPin: currentPin,
+                    newPin: newPin,
+                    accountNo: accountNo
+                },
+                type: "POST",
+                success: (data) => {
+                    if (data.status == true) {
+                        Swal.fire("Success", data.msg, "success")
+                        $("#closeModal").trigger("click")
+                    } else {
+                        $("#pinError").html(data.msg)
+                    }
+                }
+            })
+        }
+
+        let changePassword = () => {
+            var currentPassword = $("#currentPassword").val()
+            var newPassword = $("#newPassword").val()
+            var confirmPassword = $("#confirmPassword").val()
+            var customerId = $("#customerId").val()
+            $.ajax({
+                url: "/ChangePassword",
+                data: {
+                    currentPassword: currentPassword,
+                    newPassword: newPassword,
+                    confirmPassword: confirmPassword,
+                    customerId: customerId
+                }, type: "POST",
+                success: (data) => {
+                    if (data.status == true) {
+                        Swal.fire("Success", data.msg, "success")
+                        $("#passCloseModal").trigger("click")
+                    } else {
+                        $("#passwordError").html(data.msg)
+                    }
+                }
+            })
+        }
+
+        let checkRegex = ()=>{
+            var newPassword = $("#newPassword").val()
+            var pattern = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/
+            var check = pattern.test(newPassword)
+            if(!check){
+                $("#passwordError").html("New Password must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters and 1 special character")
+            }else{
+                $("#passwordError").html("")
+            }
+        }
+    </script>
+}
