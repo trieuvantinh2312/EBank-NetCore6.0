@@ -50,11 +50,33 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-  deploy:
+  deploy_dev:
     runs-on: windows-latest
     needs: build
     environment:
       name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'TinhAzure'
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_1232f6fe35c4433daa0a354a4e168715 }}
+          package: 
+    
+    deploy_test:
+    runs-on: windows-latest
+    needs: [build,deploy_dev]
+    environment:
+      name: 'test'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
