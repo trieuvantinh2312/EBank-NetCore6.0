@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "AIGJZcAl1bl9M/vivynEFAAjojJZ0UH1nk5j7EQtzJY=",
+  "Hash": "hPjqEYmG1esV0XYL37D7I94M5N8XG+ImXQffKmThfn8=",
   "Source": "BankAPP",
   "BasePath": "_content/BankAPP",
   "Mode": "Default",
@@ -33745,12 +33745,12 @@
       "OriginalItemSpec": "wwwroot\\images\\NewsImage\\SlideImage\\test.png"
     },
     {
-      "Identity": "C:\\Users\\TINH\\Desktop\\EBank-NetCore6.0\\BankAPP\\wwwroot\\images\\sontungmtp167.png",
+      "Identity": "C:\\Users\\TINH\\Desktop\\EBank-NetCore6.0\\BankAPP\\wwwroot\\images\\sontungmtp167.jpg",
       "SourceId": "BankAPP",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\TINH\\Desktop\\EBank-NetCore6.0\\BankAPP\\wwwroot\\",
       "BasePath": "_content/BankAPP",
-      "RelativePath": "images/sontungmtp167.png",
+      "RelativePath": "images/sontungmtp167.jpg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -33759,7 +33759,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\images\\sontungmtp167.png"
+      "OriginalItemSpec": "wwwroot\\images\\sontungmtp167.jpg"
     },
     {
       "Identity": "C:\\Users\\TINH\\Desktop\\EBank-NetCore6.0\\BankAPP\\wwwroot\\images\\tomato.png",
